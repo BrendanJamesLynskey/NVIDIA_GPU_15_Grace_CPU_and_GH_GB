@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA GPU 15 — Grace CPU and the GH200 / GB200 Superchips</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-card: #0d1117;
+            --bg-code: #161b22;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent: #76B900;
+            --accent-dim: #76B90044;
+            --accent-glow: #76B90033;
+            --border: #21262d;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --font-body: 'Inter', sans-serif;
+            --max-width: 900px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 17px;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ── Header ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .series-label {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 .accent {
+            color: var(--accent);
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+
+        /* ── Tag Pills ── */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            background: var(--accent-dim);
+            white-space: nowrap;
+        }
+
+        /* ── Pipeline Flow Bar ── */
+        .pipeline {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+            max-width: var(--max-width);
+        }
+
+        .pipeline-step {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 0.3rem 0.7rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .pipeline-arrow {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        /* ── Slides ── */
+        .slide {
+            min-height: 100vh;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-number {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--accent-dim);
+            position: absolute;
+            top: 2rem;
+            right: 1.5rem;
+            line-height: 1;
+            user-select: none;
+        }
+
+        .slide h2 {
+            font-family: var(--font-display);
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            line-height: 1.25;
+        }
+
+        .slide h3 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .slide p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .slide p strong {
+            color: var(--text-primary);
+        }
+
+        .slide ul, .slide ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .slide li {
+            margin-bottom: 0.4rem;
+        }
+
+        .slide li strong {
+            color: var(--text-primary);
+        }
+
+        /* ── Code Blocks ── */
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 1.25rem 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            background: rgba(118, 185, 0, 0.08);
+            padding: 0.4rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #c9d1d9;
+        }
+
+        /* Syntax highlighting (manual) */
+        .kw { color: #ff7b72; }
+        .fn { color: #d2a8ff; }
+        .str { color: #a5d6ff; }
+        .cm { color: #8b949e; font-style: italic; }
+        .num { color: #79c0ff; }
+        .type { color: #ffa657; }
+        .dir { color: #ff7b72; }
+        .mac { color: #ffa657; }
+
+        /* ── Tables ── */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--bg-code);
+            color: var(--accent);
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-display);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) td {
+            background: rgba(13, 17, 23, 0.5);
+        }
+
+        /* ── Diagrams ── */
+        .diagram-flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .diagram-box {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .diagram-box.accent {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(118, 185, 0, 0.08);
+        }
+
+        .diagram-box.dim {
+            color: var(--text-secondary);
+            border-color: var(--border);
+        }
+
+        .diagram-arrow {
+            color: var(--accent);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        /* Vertical flow diagrams */
+        .diagram-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .diagram-vertical .diagram-arrow {
+            font-size: 1.1rem;
+        }
+
+        /* Nested hierarchy diagram */
+        .hierarchy {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .hierarchy-level {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .hierarchy-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .hierarchy-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+
+        .hierarchy-item {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .hierarchy-item.accent {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(118, 185, 0, 0.08);
+        }
+
+        /* Grid diagram */
+        .diagram-grid {
+            display: grid;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .diagram-grid.cols-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .diagram-grid.cols-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .diagram-panel {
+            padding: 1rem;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .diagram-panel.accent-border {
+            border-left: 3px solid var(--accent);
+        }
+
+        .diagram-panel h4 {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .diagram-panel p, .diagram-panel ul {
+            font-size: 0.85rem;
+        }
+
+        /* ── Callout Boxes ── */
+        .callout {
+            background: var(--bg-card);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1.25rem 0;
+        }
+
+        .callout p {
+            margin-bottom: 0;
+        }
+
+        .callout .callout-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.3rem;
+        }
+
+        /* ── Tier Visual ── */
+        .tier-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .tier-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tier-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-width: 90px;
+            text-align: right;
+        }
+
+        .tier-fill {
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            white-space: nowrap;
+            transition: width 0.6s ease;
+        }
+
+        .tier-cost {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            min-width: 70px;
+        }
+
+        /* ── Contents list ── */
+        .contents-list {
+            list-style: none;
+            padding-left: 0;
+            counter-reset: contents;
+        }
+
+        .contents-list li {
+            counter-increment: contents;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .contents-list li:last-child {
+            border-bottom: none;
+        }
+
+        .contents-list li::before {
+            content: counter(contents, decimal-leading-zero);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            min-width: 2rem;
+        }
+
+        .contents-list a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .contents-list a:hover {
+            color: var(--accent);
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            max-width: var(--max-width);
+            margin: 0 auto;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            .slide {
+                padding: 3rem 1rem;
+                min-height: auto;
+            }
+
+            .slide-number {
+                font-size: 3rem;
+                top: 1.5rem;
+                right: 1rem;
+            }
+
+            .slide h2 {
+                font-size: 1.5rem;
+            }
+
+            .diagram-grid.cols-2,
+            .diagram-grid.cols-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .pipeline {
+                gap: 0.15rem;
+            }
+
+            .pipeline-step {
+                font-size: 0.6rem;
+                padding: 0.2rem 0.4rem;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            table {
+                font-size: 0.78rem;
+            }
+
+            .tier-label {
+                min-width: 60px;
+                font-size: 0.65rem;
+            }
+
+            .tier-fill {
+                font-size: 0.6rem;
+                height: 26px;
+            }
+        }
+
+        /* ── Interactive controls (added for Local LLM series) ── */
+        .control-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin: 1.25rem 0;
+        }
+        .control-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .control-row label {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            min-width: 180px;
+        }
+        .control-row input[type="range"] {
+            flex: 1;
+            min-width: 160px;
+            accent-color: var(--accent);
+        }
+        .control-row input[type="number"],
+        .control-row select {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 4px;
+            padding: 0.3rem 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+        }
+        .control-row .val {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            min-width: 80px;
+            text-align: right;
+        }
+        .btn {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            padding: 0.4rem 0.9rem;
+            background: var(--accent-dim);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .btn:hover { background: rgba(118, 185, 0, 0.2); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn.secondary {
+            background: var(--bg-code);
+            color: var(--text-secondary);
+            border-color: var(--border);
+        }
+        .result-box {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            margin-top: 0.75rem;
+        }
+        .result-box .line-label { color: var(--text-secondary); }
+        .result-box .line-val   { color: var(--accent); font-weight: 600; }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .metric {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.6rem 0.8rem;
+            text-align: center;
+        }
+        .metric .metric-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .metric .metric-value {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-top: 0.2rem;
+        }
+
+        /* Canvas / SVG containers */
+        .canvas-wrap {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1.25rem 0;
+            overflow-x: auto;
+        }
+        .canvas-wrap canvas,
+        .canvas-wrap svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        /* Small inline badge */
+        .badge {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            padding: 0.1rem 0.45rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            vertical-align: middle;
+            margin-left: 0.3rem;
+        }
+        .badge.ok    { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+        .badge.warn  { border-color: #ffa657; color: #ffa657; background: rgba(255,166,87,0.08); }
+        .badge.bad   { border-color: #ff7b72; color: #ff7b72; background: rgba(255,123,114,0.08); }
+
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <div class="series-label">NVIDIA GPU Architectures Series — Presentation 15</div>
+    <h1><span class="accent">Grace</span> &mdash; NVIDIA's ARM Datacenter CPU and the GH200 / GB200 Superchips</h1>
+    <p class="subtitle">Why does NVIDIA build CPUs? Because the path between CPU and GPU is everything for huge models. Walk through the Grace ARM CPU, NVLink-C2C coherent memory, the GH200 Grace-Hopper and GB200 Grace-Blackwell superchips, and DGX Spark &mdash; the workstation form factor of the same idea.</p>
+
+    <div class="tags">
+        <span class="tag">Grace</span><span class="tag">ARM v9</span><span class="tag">Neoverse V2</span>
+        <span class="tag">NVLink-C2C</span><span class="tag">GH200</span><span class="tag">GB200</span>
+        <span class="tag">NVL72</span><span class="tag">EGM</span>
+        <span class="tag">DGX Spark</span>
+    </div>
+
+    <div class="pipeline">
+        <span class="pipeline-step">ARM cores</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">C2C</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">GH200</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">GB200</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">NVL72</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Spark</span>
+    </div>
+</header>
+
+<section class="slide" id="slide-00">
+    <div class="slide-number">00</div>
+    <h2>Topics We'll Cover</h2>
+    <p>Grace is NVIDIA's bet that the future of AI compute is not "a CPU somewhere with GPUs hanging off PCIe", but a tightly-integrated <em>compute element</em> where CPU and GPU share one coherent memory fabric. This deck walks the architecture and its product line.</p>
+    <ul class="contents-list">
+        <li><a href="#slide-01">Why NVIDIA Built a CPU</a></li>
+        <li><a href="#slide-02">Grace &mdash; The CPU</a></li>
+        <li><a href="#slide-03">NVLink-C2C &mdash; The Bridge</a></li>
+        <li><a href="#slide-04">GH200 &mdash; The Grace-Hopper Superchip</a></li>
+        <li><a href="#slide-05">GB200 &mdash; The Grace-Blackwell Superchip</a></li>
+        <li><a href="#slide-06">EGM &mdash; Extended GPU Memory</a></li>
+        <li><a href="#slide-07">NVL72 &mdash; 72 GPUs in One NVLink Domain</a></li>
+        <li><a href="#slide-08">Software on Grace &mdash; ARM64 Linux Reality</a></li>
+        <li><a href="#slide-09">DGX Spark &mdash; The Personal GH-Class Workstation</a></li>
+        <li><a href="#slide-10">Performance &mdash; When Grace Wins, When It Doesn't</a></li>
+        <li><a href="#slide-11">Interactive: Superchip Picker</a></li>
+    </ul>
+</section>
+
+<section class="slide" id="slide-01">
+    <div class="slide-number">01</div>
+    <h2>Why NVIDIA Built a CPU</h2>
+    <p>By 2021, NVIDIA's frontier-model customers were hitting a wall that no faster GPU could fix: the path between the host CPU and the GPU. The GPU did the matmul, but the CPU still <strong>owned the page tables, the file system, the network stack, and the data-prep pipeline</strong> &mdash; and every byte that crossed between them went through PCIe.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>The x86 + PCIe bottleneck</h4>
+            <p>PCIe Gen5 x16 maxes out around <strong>64 GB/s</strong>. An H100 with HBM3 reads its weights at <strong>~3.4 TB/s</strong>. The host&harr;device path is <em>50&times; narrower</em> than the on-package memory path. Anything that touches the CPU &mdash; checkpoint load, tokenizer prep, DataLoader, optimizer state spill &mdash; pays this gap.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>The CPU still owns the work</h4>
+            <p>Even a "GPU workload" needs the host CPU for: data loading and shuffling, page-table management for unified memory, NIC and storage drivers, scheduling, host-side reductions, and Python orchestration. You can't just delete the CPU.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>NVIDIA's bet (2021)</h4>
+            <p>Build a custom ARM CPU tightly coupled to the GPU via a coherent chip-to-chip link. CPU memory becomes a slow tier of GPU memory. Page faults migrate on demand. The CPU&harr;GPU boundary stops being a copy boundary; it becomes a cache miss.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Inspired by Apple M-series</h4>
+            <p>Apple's unified-memory architecture proved that CPU + GPU sharing one pool of LPDDR is a power and bandwidth win at consumer scale. Grace is the same idea at datacenter scale: one LPDDR5x pool, one coherent address space, one socket.</p>
+        </div>
+    </div>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 720 240" width="720" height="240" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .axis { stroke: #21262d; }
+                .pcie { fill: rgba(255,123,114,0.35); stroke: #ff7b72; }
+                .nvl  { fill: rgba(118,185,0,0.40); stroke: #76B900; }
+                .hbm  { fill: rgba(255,166,87,0.35); stroke: #ffa657; }
+                .lbl  { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .val  { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; }
+                .h    { fill: #e6edf3; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+            </style>
+            <text x="10" y="18" class="h">CPU&harr;GPU path bandwidth &mdash; GB/s, log-ish scale</text>
+            <line x1="190" y1="32" x2="190" y2="220" class="axis"/>
+            <line x1="190" y1="220" x2="700" y2="220" class="axis"/>
+
+            <text x="180" y="56" class="lbl" text-anchor="end">PCIe Gen4 x16</text>
+            <rect x="190" y="46" width="20" height="16" class="pcie"/><text x="220" y="59" class="val">~32 GB/s</text>
+
+            <text x="180" y="80" class="lbl" text-anchor="end">PCIe Gen5 x16</text>
+            <rect x="190" y="70" width="40" height="16" class="pcie"/><text x="240" y="83" class="val">~64 GB/s</text>
+
+            <text x="180" y="104" class="lbl" text-anchor="end">NVLink-C2C (Grace-GPU)</text>
+            <rect x="190" y="94" width="450" height="16" class="nvl"/><text x="650" y="107" class="val">900 GB/s</text>
+
+            <text x="180" y="128" class="lbl" text-anchor="end">Grace LPDDR5x</text>
+            <rect x="190" y="118" width="240" height="16" class="nvl"/><text x="440" y="131" class="val">~480 GB/s</text>
+
+            <text x="180" y="152" class="lbl" text-anchor="end">H100 HBM3</text>
+            <rect x="190" y="142" width="500" height="16" class="hbm"/><text x="690" y="155" class="val" text-anchor="end">~3350 GB/s</text>
+
+            <text x="180" y="176" class="lbl" text-anchor="end">B200 HBM3e</text>
+            <rect x="190" y="166" width="510" height="16" class="hbm"/><text x="690" y="179" class="val" text-anchor="end">~8000 GB/s</text>
+
+            <text x="190" y="210" class="lbl">PCIe is two orders of magnitude slower than HBM &mdash; C2C closes most of the gap.</text>
+        </svg>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">The one-line argument</div>
+        <p>If the CPU&harr;GPU link is 50&times; slower than HBM, then anything that doesn't fit in HBM is paying that 50&times; penalty. <strong>NVLink-C2C makes the link only ~5&times; slower than HBM</strong>, which means CPU memory becomes a usable second tier of VRAM &mdash; not a cliff.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-02">
+    <div class="slide-number">02</div>
+    <h2>Grace &mdash; The CPU</h2>
+    <p>Grace is a 72-core ARM v9.2-a server CPU built on TSMC 4N (the same node as Hopper). Cores are <strong>ARM Neoverse V2</strong> &mdash; the same Cortex-X-derived design used in AWS Graviton 3/4 and several other ARM datacenter parts.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Cores &amp; ISA</h4>
+            <ul>
+                <li><strong>72&times; Neoverse V2</strong> (ARMv9.2-a)</li>
+                <li>4-wide out-of-order, deep ROB</li>
+                <li>Per-core: 64 KB L1-I, 64 KB L1-D, 1 MB L2</li>
+                <li><strong>SVE2</strong> with 2&times; 128-bit vector pipes</li>
+                <li>NEON / AdvSIMD compatibility</li>
+                <li>BF16 / FP16 vector dot-product</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Caches &amp; mesh</h4>
+            <ul>
+                <li><strong>~117 MB shared L3</strong> on a scalable coherent mesh</li>
+                <li>Mesh-based interconnect &mdash; not a ring</li>
+                <li>Hardware coherency to the paired GPU</li>
+                <li>System-MMU for two-level translation</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Memory</h4>
+            <ul>
+                <li><strong>On-package LPDDR5x</strong> (no DIMMs)</li>
+                <li>Grace 480 GB SKU: <strong>~480 GB/s</strong></li>
+                <li>Grace 960 GB SKU: <strong>~720 GB/s</strong></li>
+                <li>ECC throughout</li>
+                <li>Lower power per GB than DDR5</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>I/O &amp; power</h4>
+            <ul>
+                <li><strong>PCIe Gen5</strong> for NICs / NVMe / accelerators</li>
+                <li><strong>NVLink-C2C</strong> as primary GPU path (900 GB/s)</li>
+                <li>TDP ~250&ndash;500 W for the full Grace die</li>
+                <li>System Management on a dedicated controller</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>Two SKUs &mdash; capacity vs. bandwidth</h3>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>SKU</th><th>LPDDR5x capacity</th><th>LPDDR5x bandwidth</th><th>Typical use</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Grace 480GB</strong></td><td>480 GB on-package</td><td>~480 GB/s</td><td>Paired with H100 (GH200), most GB200 builds</td></tr>
+                <tr><td><strong>Grace 960GB</strong></td><td>960 GB on-package</td><td>~720 GB/s</td><td>Standalone Grace CPU Superchip (2&times; Grace), HPC nodes</td></tr>
+                <tr><td>Grace CPU Superchip</td><td>2&times; 480 = 960 GB</td><td>2&times; ~480 GB/s</td><td>Two Grace dies on one module via NVLink-C2C, no GPU</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 720 220" width="720" height="220" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .pkg { fill: #161b22; stroke: #30363d; }
+                .core { fill: rgba(118,185,0,0.18); stroke: #76B900; }
+                .l3   { fill: rgba(210,168,255,0.20); stroke: #d2a8ff; }
+                .mem  { fill: rgba(255,166,87,0.20); stroke: #ffa657; }
+                .t    { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+                .h    { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+            </style>
+            <text x="10" y="18" class="h">Grace die &mdash; schematic floor-plan</text>
+            <rect x="20" y="30" width="680" height="170" class="pkg"/>
+            <!-- core grid 12x6 = 72 -->
+            <g>
+                <!-- draw 6 rows x 12 cols of small cores in middle band -->
+                <g transform="translate(170,55)">
+                    <g id="cores">
+                        <!-- generated rows -->
+                    </g>
+                </g>
+            </g>
+            <!-- core rectangles -->
+            <g>
+                <!-- row 1 -->
+                <rect x="170" y="55"  width="28" height="14" class="core"/><rect x="200" y="55"  width="28" height="14" class="core"/><rect x="230" y="55"  width="28" height="14" class="core"/><rect x="260" y="55"  width="28" height="14" class="core"/><rect x="290" y="55"  width="28" height="14" class="core"/><rect x="320" y="55"  width="28" height="14" class="core"/><rect x="350" y="55"  width="28" height="14" class="core"/><rect x="380" y="55"  width="28" height="14" class="core"/><rect x="410" y="55"  width="28" height="14" class="core"/><rect x="440" y="55"  width="28" height="14" class="core"/><rect x="470" y="55"  width="28" height="14" class="core"/><rect x="500" y="55"  width="28" height="14" class="core"/>
+                <!-- row 2 -->
+                <rect x="170" y="72"  width="28" height="14" class="core"/><rect x="200" y="72"  width="28" height="14" class="core"/><rect x="230" y="72"  width="28" height="14" class="core"/><rect x="260" y="72"  width="28" height="14" class="core"/><rect x="290" y="72"  width="28" height="14" class="core"/><rect x="320" y="72"  width="28" height="14" class="core"/><rect x="350" y="72"  width="28" height="14" class="core"/><rect x="380" y="72"  width="28" height="14" class="core"/><rect x="410" y="72"  width="28" height="14" class="core"/><rect x="440" y="72"  width="28" height="14" class="core"/><rect x="470" y="72"  width="28" height="14" class="core"/><rect x="500" y="72"  width="28" height="14" class="core"/>
+                <!-- row 3 -->
+                <rect x="170" y="89"  width="28" height="14" class="core"/><rect x="200" y="89"  width="28" height="14" class="core"/><rect x="230" y="89"  width="28" height="14" class="core"/><rect x="260" y="89"  width="28" height="14" class="core"/><rect x="290" y="89"  width="28" height="14" class="core"/><rect x="320" y="89"  width="28" height="14" class="core"/><rect x="350" y="89"  width="28" height="14" class="core"/><rect x="380" y="89"  width="28" height="14" class="core"/><rect x="410" y="89"  width="28" height="14" class="core"/><rect x="440" y="89"  width="28" height="14" class="core"/><rect x="470" y="89"  width="28" height="14" class="core"/><rect x="500" y="89"  width="28" height="14" class="core"/>
+                <!-- row 4 -->
+                <rect x="170" y="106" width="28" height="14" class="core"/><rect x="200" y="106" width="28" height="14" class="core"/><rect x="230" y="106" width="28" height="14" class="core"/><rect x="260" y="106" width="28" height="14" class="core"/><rect x="290" y="106" width="28" height="14" class="core"/><rect x="320" y="106" width="28" height="14" class="core"/><rect x="350" y="106" width="28" height="14" class="core"/><rect x="380" y="106" width="28" height="14" class="core"/><rect x="410" y="106" width="28" height="14" class="core"/><rect x="440" y="106" width="28" height="14" class="core"/><rect x="470" y="106" width="28" height="14" class="core"/><rect x="500" y="106" width="28" height="14" class="core"/>
+                <!-- row 5 -->
+                <rect x="170" y="123" width="28" height="14" class="core"/><rect x="200" y="123" width="28" height="14" class="core"/><rect x="230" y="123" width="28" height="14" class="core"/><rect x="260" y="123" width="28" height="14" class="core"/><rect x="290" y="123" width="28" height="14" class="core"/><rect x="320" y="123" width="28" height="14" class="core"/><rect x="350" y="123" width="28" height="14" class="core"/><rect x="380" y="123" width="28" height="14" class="core"/><rect x="410" y="123" width="28" height="14" class="core"/><rect x="440" y="123" width="28" height="14" class="core"/><rect x="470" y="123" width="28" height="14" class="core"/><rect x="500" y="123" width="28" height="14" class="core"/>
+                <!-- row 6 -->
+                <rect x="170" y="140" width="28" height="14" class="core"/><rect x="200" y="140" width="28" height="14" class="core"/><rect x="230" y="140" width="28" height="14" class="core"/><rect x="260" y="140" width="28" height="14" class="core"/><rect x="290" y="140" width="28" height="14" class="core"/><rect x="320" y="140" width="28" height="14" class="core"/><rect x="350" y="140" width="28" height="14" class="core"/><rect x="380" y="140" width="28" height="14" class="core"/><rect x="410" y="140" width="28" height="14" class="core"/><rect x="440" y="140" width="28" height="14" class="core"/><rect x="470" y="140" width="28" height="14" class="core"/><rect x="500" y="140" width="28" height="14" class="core"/>
+            </g>
+
+            <text x="335" y="170" class="t" text-anchor="middle">72&times; Neoverse V2 (ARMv9.2-a, SVE2)</text>
+
+            <!-- L3 / mesh -->
+            <rect x="170" y="178" width="358" height="14" class="l3"/>
+            <text x="349" y="189" class="t" text-anchor="middle">~117 MB L3 on scalable coherent mesh</text>
+
+            <!-- LPDDR5x banks left and right -->
+            <rect x="40" y="55" width="120" height="137" class="mem"/>
+            <text x="100" y="120" class="t" text-anchor="middle">LPDDR5x</text>
+            <text x="100" y="135" class="t" text-anchor="middle">~240 GB</text>
+            <text x="100" y="150" class="t" text-anchor="middle">~240 GB/s</text>
+
+            <rect x="540" y="55" width="150" height="137" class="mem"/>
+            <text x="615" y="120" class="t" text-anchor="middle">LPDDR5x</text>
+            <text x="615" y="135" class="t" text-anchor="middle">~240 GB</text>
+            <text x="615" y="150" class="t" text-anchor="middle">~240 GB/s</text>
+
+            <text x="615" y="180" class="t" text-anchor="middle">PCIe Gen5 + C2C</text>
+        </svg>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Why Neoverse V2 specifically</div>
+        <p>NVIDIA chose ARM not for ISA reasons but for <em>customisation</em>. ARM lets them keep their proprietary mesh, drop in a custom system-MMU, and graft on the C2C port without licensing renegotiation. The Neoverse V2 core itself is unmodified; everything around it is custom NVIDIA silicon.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-03">
+    <div class="slide-number">03</div>
+    <h2>NVLink-C2C &mdash; The Bridge</h2>
+    <p>NVLink-C2C ("chip-to-chip") is the link that makes Grace useful as a GPU companion. It connects the Grace die and the paired GPU die over a short on-package trace at <strong>900 GB/s bidirectional</strong>, with full cache coherency.</p>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 720 230" width="720" height="230" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .pkg  { fill: #0d1117; stroke: #30363d; }
+                .die  { fill: #161b22; stroke: #76B900; }
+                .mem  { fill: rgba(255,166,87,0.25); stroke: #ffa657; }
+                .lpd  { fill: rgba(118,185,0,0.20); stroke: #76B900; }
+                .link { stroke: #76B900; stroke-width: 6; fill: none; }
+                .h    { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+                .t    { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .lbl  { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+            </style>
+            <text x="10" y="18" class="h">Grace + GPU on one module &mdash; the C2C link</text>
+            <rect x="20" y="30" width="680" height="180" class="pkg"/>
+
+            <!-- Grace -->
+            <rect x="60" y="60" width="220" height="120" class="die"/>
+            <text x="170" y="85" class="t" text-anchor="middle" style="fill:#76B900;font-weight:700;">GRACE CPU</text>
+            <text x="170" y="105" class="t" text-anchor="middle">72&times; Neoverse V2</text>
+            <text x="170" y="125" class="t" text-anchor="middle">117 MB L3</text>
+            <text x="170" y="145" class="t" text-anchor="middle">SVE2 vector</text>
+
+            <!-- Grace LPDDR -->
+            <rect x="40" y="60" width="20" height="120" class="lpd"/>
+            <rect x="280" y="60" width="20" height="120" class="lpd"/>
+            <text x="170" y="200" class="lbl" text-anchor="middle">LPDDR5x ~480 GB / ~480 GB/s</text>
+
+            <!-- C2C link -->
+            <line x1="280" y1="120" x2="440" y2="120" class="link"/>
+            <text x="360" y="110" class="lbl" text-anchor="middle">NVLink-C2C</text>
+            <text x="360" y="138" class="lbl" text-anchor="middle" style="fill:#76B900;">900 GB/s coherent</text>
+
+            <!-- GPU -->
+            <rect x="440" y="60" width="220" height="120" class="die"/>
+            <text x="550" y="85" class="t" text-anchor="middle" style="fill:#76B900;font-weight:700;">HOPPER / BLACKWELL</text>
+            <text x="550" y="105" class="t" text-anchor="middle">SMs + Tensor Cores</text>
+            <text x="550" y="125" class="t" text-anchor="middle">L2 + TMA</text>
+
+            <!-- GPU HBM -->
+            <rect x="660" y="60" width="20" height="120" class="mem"/>
+            <text x="550" y="200" class="lbl" text-anchor="middle">HBM3 / HBM3e (~3.4&ndash;8 TB/s)</text>
+        </svg>
+    </div>
+
+    <h3>What "coherent" actually means here</h3>
+    <ul>
+        <li><strong>Single 49-bit address space</strong> shared by Grace and the paired GPU. A pointer is a pointer; both sides see the same virtual addresses.</li>
+        <li><strong>Cache coherency</strong> at the line level. Grace cores can read GPU-written data without an explicit flush; the GPU sees CPU writes.</li>
+        <li><strong>Page migration on demand.</strong> A page can be physically resident in Grace LPDDR5x or in GPU HBM; the system-MMU migrates pages based on access pattern.</li>
+        <li><strong>ATS (Address Translation Service)</strong> over C2C lets the GPU walk Grace's page tables directly &mdash; no IOMMU bounce.</li>
+    </ul>
+
+    <h3>How C2C compares to other CPU&harr;CPU / die-to-die fabrics</h3>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Fabric</th><th>Where</th><th>Bandwidth</th><th>Coherent?</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td><strong>NVLink-C2C</strong></td><td>Grace &harr; GPU on one module</td><td>900 GB/s bidir</td><td>Yes</td><td>Cross-vendor design (NVIDIA ARM CPU + NVIDIA GPU)</td></tr>
+                <tr><td>Intel UPI</td><td>Xeon &harr; Xeon socket</td><td>~40 GB/s per link</td><td>Yes</td><td>CPU&harr;CPU only; no GPU integration</td></tr>
+                <tr><td>AMD Infinity Fabric</td><td>EPYC &harr; EPYC, MI&harr;MI</td><td>~100 GB/s per link</td><td>Yes</td><td>Single-vendor; MI300 has on-package CPU+GPU variants</td></tr>
+                <tr><td>CXL 3.0</td><td>Generic accelerator over PCIe</td><td>~64 GB/s per x16</td><td>Yes (CXL.cache)</td><td>Open standard, but slower than C2C</td></tr>
+                <tr><td>UCIe</td><td>Open chiplet standard</td><td>varies</td><td>Optional</td><td>Specifies the PHY; coherency is up to the protocol layer</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">It's not a NIC</div>
+        <p>The crucial mental shift: <strong>C2C is fabric, not network.</strong> There's no driver, no DMA descriptor ring, no doorbell. From software's view, Grace memory and GPU memory are one heap. The only thing the runtime decides is <em>placement hints</em> &mdash; "prefer GPU" or "prefer CPU" &mdash; and the hardware migrates pages accordingly.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-04">
+    <div class="slide-number">04</div>
+    <h2>GH200 &mdash; The Grace-Hopper Superchip</h2>
+    <p>GH200 was the first product to ship with Grace + a paired GPU on one module. The pairing is one Grace CPU + one Hopper GPU (an H100 or H200-class die), connected by NVLink-C2C.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>GH200 480GB</h4>
+            <ul>
+                <li>Grace 480 GB LPDDR5x</li>
+                <li>96 GB <strong>HBM3</strong> (Hopper H100 die)</li>
+                <li>Total unified: <strong>576 GB</strong></li>
+                <li>Aggregate memory bandwidth: HBM3 ~3.4 TB/s + LPDDR ~480 GB/s</li>
+                <li>Released 2023</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>GH200 624GB</h4>
+            <ul>
+                <li>Grace 480 GB LPDDR5x</li>
+                <li>144 GB <strong>HBM3e</strong> (this is the "H200" inside)</li>
+                <li>Total unified: <strong>624 GB</strong></li>
+                <li>HBM3e bandwidth ~4.8 TB/s</li>
+                <li>Refreshed 2024 &mdash; the volume Helios / Alps part</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>Form factors</h3>
+    <ul>
+        <li><strong>HGX-style baseboard with 8&times; GH200</strong> &mdash; 8 superchips on one tray, NVLink between them via NVSwitch. Roughly the GH200 equivalent of an HGX H100 tray.</li>
+        <li><strong>Single-module 1U servers</strong> &mdash; one GH200 per chassis, optimised for density and power. Used in many of the GH200-based supercomputers.</li>
+        <li><strong>Multi-node clusters</strong> &mdash; <em>Alps</em> (CSCS, Switzerland) and <em>Helios</em> are the two flagship deployments; both rely on GH200 624GB.</li>
+    </ul>
+
+    <h3>Why a 100B model fits a single GH200 cleanly</h3>
+    <div class="diagram-vertical">
+        <div class="diagram-box accent">100B-param model, FP8</div>
+        <div class="diagram-arrow">&darr;</div>
+        <div class="diagram-box">Hot weights + activations &rarr; 96&ndash;144 GB HBM3/3e (active matmul)</div>
+        <div class="diagram-arrow">&darr; via NVLink-C2C 900 GB/s</div>
+        <div class="diagram-box">KV cache, optimizer state, checkpoint pages &rarr; Grace 480 GB LPDDR5x</div>
+        <div class="diagram-arrow">&darr;</div>
+        <div class="diagram-box dim">Cold checkpoint shards &rarr; NVMe over PCIe Gen5</div>
+    </div>
+
+    <p>The crucial point: the spill from HBM to LPDDR5x happens <em>without software changes</em>. CUDA's unified memory paging treats the LPDDR pool as a slow tier of VRAM. A model that previously needed two H100s (one for weights, one for KV cache + optimizer state) fits one GH200 because the spill tier is now coherent and fast.</p>
+
+    <div class="callout">
+        <div class="callout-label">The win is for "almost-fits" models</div>
+        <p>If your model fits in HBM with comfortable margin, GH200 is a side-grade vs an SXM H100 server. If your model <em>almost</em> fits but spills 30&ndash;100 GB into checkpoint or KV, GH200 turns "I need a second node and tensor parallel" into "one box". That's the operational win NVIDIA is selling.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-05">
+    <div class="slide-number">05</div>
+    <h2>GB200 &mdash; The Grace-Blackwell Superchip</h2>
+    <p>GB200 is the Blackwell-era replacement for GH200, but with a key topology change: <strong>one Grace + two B200 GPUs</strong> on one module. Each B200 has its own dedicated 900 GB/s C2C link to Grace; the two B200s talk to each other over NVLink 5 at 1.8 TB/s.</p>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 720 280" width="720" height="280" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .pkg  { fill: #0d1117; stroke: #30363d; }
+                .die  { fill: #161b22; stroke: #76B900; }
+                .lpd  { fill: rgba(118,185,0,0.18); stroke: #76B900; }
+                .hbm  { fill: rgba(255,166,87,0.20); stroke: #ffa657; }
+                .c2c  { stroke: #76B900; stroke-width: 5; fill: none; }
+                .nvl  { stroke: #d2a8ff; stroke-width: 4; fill: none; stroke-dasharray: 4 3; }
+                .h    { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+                .t    { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .lbl  { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+            </style>
+            <text x="10" y="18" class="h">GB200 superchip &mdash; 1 Grace + 2 B200</text>
+            <rect x="10" y="30" width="700" height="240" class="pkg"/>
+
+            <!-- Grace bottom -->
+            <rect x="240" y="190" width="240" height="60" class="die"/>
+            <text x="360" y="215" class="t" text-anchor="middle" style="fill:#76B900;font-weight:700;">GRACE</text>
+            <text x="360" y="232" class="t" text-anchor="middle">480 GB LPDDR5x · 480 GB/s</text>
+            <rect x="220" y="190" width="20" height="60" class="lpd"/>
+            <rect x="480" y="190" width="20" height="60" class="lpd"/>
+
+            <!-- B200 left -->
+            <rect x="60" y="60" width="220" height="100" class="die"/>
+            <text x="170" y="85" class="t" text-anchor="middle" style="fill:#76B900;font-weight:700;">B200 #1</text>
+            <text x="170" y="105" class="t" text-anchor="middle">192 GB HBM3e</text>
+            <text x="170" y="125" class="t" text-anchor="middle">~8 TB/s</text>
+            <text x="170" y="145" class="t" text-anchor="middle">FP4 / FP8 tensor cores</text>
+            <rect x="40" y="60" width="20" height="100" class="hbm"/>
+
+            <!-- B200 right -->
+            <rect x="440" y="60" width="220" height="100" class="die"/>
+            <text x="550" y="85" class="t" text-anchor="middle" style="fill:#76B900;font-weight:700;">B200 #2</text>
+            <text x="550" y="105" class="t" text-anchor="middle">192 GB HBM3e</text>
+            <text x="550" y="125" class="t" text-anchor="middle">~8 TB/s</text>
+            <text x="550" y="145" class="t" text-anchor="middle">FP4 / FP8 tensor cores</text>
+            <rect x="660" y="60" width="20" height="100" class="hbm"/>
+
+            <!-- C2C links -->
+            <line x1="170" y1="160" x2="280" y2="190" class="c2c"/>
+            <text x="180" y="185" class="lbl">C2C 900 GB/s</text>
+            <line x1="550" y1="160" x2="440" y2="190" class="c2c"/>
+            <text x="500" y="185" class="lbl">C2C 900 GB/s</text>
+
+            <!-- NVLink 5 between the two B200s -->
+            <path d="M 280 110 L 440 110" class="nvl"/>
+            <text x="360" y="100" class="lbl" text-anchor="middle" style="fill:#d2a8ff;">NVLink 5 &mdash; 1.8 TB/s</text>
+        </svg>
+    </div>
+
+    <h3>Numbers per superchip</h3>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Resource</th><th>Per GB200 superchip</th></tr></thead>
+            <tbody>
+                <tr><td>Grace dies</td><td>1</td></tr>
+                <tr><td>B200 GPU dies</td><td>2 (each is a 2-die package = 4 reticle-limit dies total)</td></tr>
+                <tr><td>HBM3e (GPU side)</td><td>2&times; 192 GB = <strong>384 GB</strong></td></tr>
+                <tr><td>LPDDR5x (CPU side)</td><td><strong>480 GB</strong></td></tr>
+                <tr><td>Total unified memory</td><td><strong>864 GB</strong></td></tr>
+                <tr><td>FP4 dense compute</td><td>~18 PFLOPS</td></tr>
+                <tr><td>FP8 dense compute</td><td>~9 PFLOPS</td></tr>
+                <tr><td>Grace&harr;GPU bandwidth</td><td>2&times; 900 = 1.8 TB/s C2C</td></tr>
+                <tr><td>GPU&harr;GPU bandwidth (in-package)</td><td>1.8 TB/s NVLink 5</td></tr>
+                <tr><td>Module weight</td><td>~18 kg</td></tr>
+                <tr><td>Module TDP</td><td>~2700 W</td></tr>
+                <tr><td>Cooling</td><td>Liquid only</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">The building block of NVL72</div>
+        <p>GB200 is not really a server CPU; it's the unit cell of the rack. A GB200 NVL72 rack contains 18 of these, glued together by NVLink Switch trays into a single 72-GPU coherent NVLink domain. Everything else &mdash; cooling design, power delivery, copper backplane &mdash; flows from this choice.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-06">
+    <div class="slide-number">06</div>
+    <h2>EGM &mdash; Extended GPU Memory</h2>
+    <p>EGM (Extended GPU Memory) is the formal name for the mode where the GPU treats Grace's LPDDR5x as additional VRAM at C2C bandwidth. It's part hardware (the C2C ATS) and part driver: the CUDA runtime exposes Grace memory as <em>one giant pool of GPU-accessible memory</em>, paged on demand.</p>
+
+    <h3>What the kernel actually sees</h3>
+    <p>From a CUDA kernel's viewpoint, EGM memory is indistinguishable from regular VRAM &mdash; the same pointers, the same load/store instructions. The difference is purely in <em>where the page resides</em>:</p>
+
+    <div class="tier-visual">
+        <div class="tier-bar">
+            <div class="tier-label">HBM3e (B200)</div>
+            <div class="tier-fill" style="width: 95%; background: linear-gradient(90deg, rgba(255,166,87,0.65), rgba(255,166,87,0.25)); color: #ffa657;">~5&ndash;8 TB/s &nbsp;·&nbsp; ns latency</div>
+            <div class="tier-cost">~192 GB</div>
+        </div>
+        <div class="tier-bar">
+            <div class="tier-label">C2C path</div>
+            <div class="tier-fill" style="width: 18%; background: linear-gradient(90deg, rgba(118,185,0,0.55), rgba(118,185,0,0.20)); color: #76B900;">900 GB/s</div>
+            <div class="tier-cost">link only</div>
+        </div>
+        <div class="tier-bar">
+            <div class="tier-label">LPDDR5x (Grace)</div>
+            <div class="tier-fill" style="width: 30%; background: linear-gradient(90deg, rgba(118,185,0,0.45), rgba(118,185,0,0.10)); color: #76B900;">~480&ndash;720 GB/s · ~10&times; HBM latency</div>
+            <div class="tier-cost">~480 GB</div>
+        </div>
+        <div class="tier-bar">
+            <div class="tier-label">PCIe NVMe</div>
+            <div class="tier-fill" style="width: 4%; background: linear-gradient(90deg, rgba(255,123,114,0.45), rgba(255,123,114,0.10)); color: #ff7b72;">~14 GB/s</div>
+            <div class="tier-cost">terabytes</div>
+        </div>
+    </div>
+
+    <h3>How a kernel allocates EGM memory</h3>
+    <div class="code-block">
+        <div class="code-header">cudaMallocManaged on GH200 / GB200 &mdash; one heap, two physical tiers</div>
+        <pre><code><span class="cm">// All allocations go through the unified-memory allocator.</span>
+<span class="cm">// On Grace-Hopper / Grace-Blackwell, the backing store can be HBM or LPDDR5x.</span>
+<span class="kw">size_t</span> bytes = <span class="num">200ULL</span> * <span class="num">1024</span> * <span class="num">1024</span> * <span class="num">1024</span>;   <span class="cm">// 200 GB &mdash; bigger than HBM</span>
+<span class="kw">float</span>* x;
+<span class="fn">cudaMallocManaged</span>(&amp;x, bytes);
+
+<span class="cm">// Tell the driver our preferred placement &mdash; "prefer GPU" or "prefer CPU".</span>
+<span class="cm">// Without a hint, the runtime decides based on first-touch and access counts.</span>
+<span class="fn">cudaMemAdvise</span>(x, bytes, <span class="mac">cudaMemAdviseSetPreferredLocation</span>, <span class="num">0</span>);  <span class="cm">// device 0 = GPU</span>
+
+<span class="cm">// Migration is automatic on access:</span>
+<span class="cm">//   pages touched by the GPU live in HBM</span>
+<span class="cm">//   pages touched by Grace cores live in LPDDR5x</span>
+<span class="cm">//   pages cold for &gt; N accesses get evicted to the other tier</span>
+
+my_kernel&lt;&lt;&lt;blocks, threads&gt;&gt;&gt;(x, bytes);   <span class="cm">// just works &mdash; no copies, no streams</span>
+
+<span class="cm">// You can also pre-fetch a hot range to HBM before launch:</span>
+<span class="fn">cudaMemPrefetchAsync</span>(x, hot_bytes, <span class="num">0</span>, stream);</code></pre>
+    </div>
+
+    <h3>Where EGM earns its keep</h3>
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Model loading</h4>
+            <p>Loading a 200 GB FP8 checkpoint into a single GH200 happens at C2C speed (~900 GB/s) once it is in Grace memory &mdash; vs ~32 GB/s over PCIe Gen5 to a discrete H100. Checkpoint cold-starts drop from minutes to seconds.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>KV cache offload at scale</h4>
+            <p>For long-context (128k+) inference with many concurrent users, the KV cache often dwarfs the weights. Spilling cold KV pages to LPDDR5x at 480 GB/s is "good enough" for prefix-cached requests; HBM holds only the active KV.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Optimizer state during training</h4>
+            <p>FP32 master weights, AdamW moments, and gradient buffers can be 6&ndash;8&times; the size of FP8 weights. Pinning these to Grace LPDDR5x while the forward/backward pass uses HBM doubles the trainable model size per node.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Vector search indexes</h4>
+            <p>RAG indexes (FAISS, NeMo Retriever) are millions of float32 vectors that are <em>read once</em> per query. They fit comfortably in 480 GB of LPDDR5x and stream across C2C as needed &mdash; no need for an Optane-style tier.</p>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">When EGM hurts</div>
+        <p>If your access pattern thrashes pages back and forth (e.g. interleaved GPU&harr;CPU updates on the same buffer), every miss costs a round trip over C2C. Always set <code>cudaMemAdvise</code> hints for your hot data structures, and use <code>nvprof --print-gpu-trace</code> to confirm pages aren't migrating each launch.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-07">
+    <div class="slide-number">07</div>
+    <h2>NVL72 &mdash; 72 GPUs in One NVLink Domain</h2>
+    <p>Deck 09 (Blackwell) and deck 11 (Datacenter Platforms) covered NVL72 in detail; this is the recap from Grace's perspective.</p>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 720 380" width="720" height="380" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .rack { fill: #0d1117; stroke: #30363d; }
+                .ct   { fill: rgba(118,185,0,0.18); stroke: #76B900; }
+                .sw   { fill: rgba(210,168,255,0.18); stroke: #d2a8ff; }
+                .pdu  { fill: rgba(255,166,87,0.18); stroke: #ffa657; }
+                .h    { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+                .t    { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+                .lbl  { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+            </style>
+            <text x="10" y="18" class="h">GB200 NVL72 &mdash; one rack as one computer</text>
+            <rect x="200" y="30" width="320" height="340" class="rack"/>
+
+            <text x="360" y="50" class="t" text-anchor="middle" style="fill:#ffa657;">PDU / coolant manifold (top)</text>
+            <rect x="210" y="55" width="300" height="14" class="pdu"/>
+
+            <!-- 9 compute trays then 1 switch tray then alternating -->
+            <!-- pattern: compute(9), switch(9 between), compute(9). For simplicity show 18 compute + 9 switch interleaved -->
+            <g>
+                <!-- top half -->
+                <rect x="210" y="75"  width="300" height="12" class="ct"/><text x="220" y="84" class="t">Compute · GB200 #1 (Grace + 2&times; B200)</text>
+                <rect x="210" y="89"  width="300" height="12" class="ct"/><text x="220" y="98" class="t">Compute · GB200 #2</text>
+                <rect x="210" y="103" width="300" height="12" class="ct"/><text x="220" y="112" class="t">Compute · GB200 #3</text>
+                <rect x="210" y="117" width="300" height="12" class="ct"/><text x="220" y="126" class="t">Compute · GB200 #4</text>
+                <rect x="210" y="131" width="300" height="12" class="ct"/><text x="220" y="140" class="t">Compute · GB200 #5</text>
+                <rect x="210" y="145" width="300" height="12" class="ct"/><text x="220" y="154" class="t">Compute · GB200 #6</text>
+                <rect x="210" y="159" width="300" height="12" class="ct"/><text x="220" y="168" class="t">Compute · GB200 #7</text>
+                <rect x="210" y="173" width="300" height="12" class="ct"/><text x="220" y="182" class="t">Compute · GB200 #8</text>
+                <rect x="210" y="187" width="300" height="12" class="ct"/><text x="220" y="196" class="t">Compute · GB200 #9</text>
+
+                <!-- middle: 9 NVLink switches in one band -->
+                <rect x="210" y="203" width="300" height="60" class="sw"/>
+                <text x="360" y="222" class="t" text-anchor="middle" style="fill:#d2a8ff;font-weight:700;">9&times; NVLink Switch trays</text>
+                <text x="360" y="240" class="t" text-anchor="middle">copper backplane &mdash; all 72 B200 in one NVLink-5 domain</text>
+
+                <rect x="210" y="267" width="300" height="12" class="ct"/><text x="220" y="276" class="t">Compute · GB200 #10</text>
+                <rect x="210" y="281" width="300" height="12" class="ct"/><text x="220" y="290" class="t">Compute · GB200 #11</text>
+                <rect x="210" y="295" width="300" height="12" class="ct"/><text x="220" y="304" class="t">Compute · GB200 #12</text>
+                <rect x="210" y="309" width="300" height="12" class="ct"/><text x="220" y="318" class="t">Compute · GB200 #13</text>
+                <rect x="210" y="323" width="300" height="12" class="ct"/><text x="220" y="332" class="t">Compute · GB200 #14</text>
+                <rect x="210" y="337" width="300" height="12" class="ct"/><text x="220" y="346" class="t">Compute · GB200 #15&ndash;18</text>
+            </g>
+
+            <!-- side annotations -->
+            <text x="195" y="100" class="lbl" text-anchor="end">cold inlet</text>
+            <text x="195" y="160" class="lbl" text-anchor="end">~120 kW</text>
+            <text x="195" y="320" class="lbl" text-anchor="end">hot return</text>
+            <text x="525" y="100" class="lbl">18 compute trays</text>
+            <text x="525" y="115" class="lbl">= 18 Grace</text>
+            <text x="525" y="130" class="lbl">= 36 B200 GPUs</text>
+            <text x="525" y="160" class="lbl">9 switch trays</text>
+            <text x="525" y="175" class="lbl">copper, not optical</text>
+            <text x="525" y="320" class="lbl">~22 TB total</text>
+            <text x="525" y="335" class="lbl">unified memory</text>
+        </svg>
+    </div>
+
+    <h3>The numbers</h3>
+    <ul>
+        <li><strong>18 compute trays</strong>, one GB200 each &rarr; <strong>18 Grace + 36 B200</strong> per rack (each GB200 has 2 B200 dies).</li>
+        <li><strong>9 NVLink Switch trays</strong> in the middle, copper backplane between trays.</li>
+        <li><strong>HBM3e total:</strong> 36 &times; 192 GB = <strong>13.5 TB</strong> across all GPUs (with the 384 GB/superchip number, 18 &times; 384 ~ 6.9 TB per side counted differently &mdash; the 13.5 TB figure is the HBM3e aggregate when both B200 dies in each GB200 are counted).</li>
+        <li><strong>Grace LPDDR5x total:</strong> 18 &times; 480 GB = <strong>8.6 TB</strong>.</li>
+        <li><strong>Aggregate addressable memory:</strong> ~<strong>22 TB</strong> coherent across the rack from any GPU.</li>
+        <li><strong>NVLink 5 fabric:</strong> 1.8 TB/s per GPU pair, all 72 B200 dies in <em>one</em> NVLink domain. No InfiniBand needed inside a rack.</li>
+        <li>Power: ~120 kW per rack. Liquid cooling mandatory; air-cooled NVL72 is not a thing.</li>
+    </ul>
+
+    <div class="callout">
+        <div class="callout-label">A rack is the new server</div>
+        <p>NVL72 is the first NVIDIA product designed as a <em>rack-scale single computer</em>. The unit of purchase, the unit of scheduling in CUDA / NCCL, and the unit of failure domain are all the rack. A 1T-parameter MoE model is meant to be trained or served on one or two NVL72s &mdash; not on a sea of HGX trays linked by IB.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-08">
+    <div class="slide-number">08</div>
+    <h2>Software on Grace &mdash; ARM64 Linux Reality</h2>
+    <p>Grace runs full ARM64 Linux. By 2026 this is unremarkable for distros and most major workloads &mdash; but there are a few corners where you still need to check.</p>
+
+    <h3>What just works</h3>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Layer</th><th>ARM64 status on Grace</th></tr></thead>
+            <tbody>
+                <tr><td><strong>OS</strong></td><td>Ubuntu 22.04 / 24.04, RHEL 9, SLES 15 SP5+, Rocky 9 &mdash; all official</td></tr>
+                <tr><td><strong>CUDA toolkit</strong></td><td>ARM64 builds since CUDA 11.4; current toolchain is fully ARM64 native</td></tr>
+                <tr><td><strong>cuDNN / NCCL / TensorRT</strong></td><td>ARM64 builds shipped alongside x86_64 since 2022</td></tr>
+                <tr><td><strong>PyTorch</strong></td><td><code>aarch64+cuda</code> wheels standard since PyTorch 2.0; nightly builds first-class</td></tr>
+                <tr><td><strong>JAX</strong></td><td>ARM64 + CUDA support official since 2023</td></tr>
+                <tr><td><strong>Triton</strong></td><td>ARM64 builds, autotune cache works</td></tr>
+                <tr><td><strong>NGC catalog</strong></td><td>All major NVIDIA images ship <code>linux/arm64</code> manifests</td></tr>
+                <tr><td><strong>vLLM / TensorRT-LLM</strong></td><td>ARM64 wheels and containers since 2024</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>The container gotcha</h3>
+    <p>The single most common ARM64-on-Grace problem is <strong>container image architecture</strong>. A lot of community ML images are built for <code>linux/amd64</code> only, and pulling them onto Grace either fails or silently runs under emulation (which is catastrophically slow).</p>
+
+    <div class="code-block">
+        <div class="code-header">Verify your images include arm64 before deploying</div>
+        <pre><code><span class="cm"># Inspect a manifest list for both architectures:</span>
+docker buildx imagetools inspect vllm/vllm-openai:latest
+
+<span class="cm"># Look for entries like:</span>
+<span class="cm">#   Manifests:</span>
+<span class="cm">#     Name:      ...@sha256:...   Platform: linux/amd64</span>
+<span class="cm">#     Name:      ...@sha256:...   Platform: linux/arm64</span>
+
+<span class="cm"># Force the arch on pull (catches "wrong arch" early):</span>
+docker pull --platform=linux/arm64 vllm/vllm-openai:latest
+
+<span class="cm"># Build multi-arch images yourself:</span>
+docker buildx build \
+    --platform linux/amd64,linux/arm64 \
+    --push -t myorg/myapp:1.0 .</code></pre>
+    </div>
+
+    <h3>Other corners worth knowing</h3>
+    <ul>
+        <li><strong>SVE2 vs AVX-512.</strong> Hand-tuned x86 kernels (numpy MKL paths, certain DataLoader hot paths) may run on a generic NEON path on Grace. Modern ACL (Arm Compute Library) and OpenBLAS releases now use SVE2 properly &mdash; check linkage with <code>ldd</code>.</li>
+        <li><strong>Glibc / musl.</strong> Some prebuilt wheels assume specific glibc minor versions. Stick to the distro's default Python and pip-install only ARM64 wheels.</li>
+        <li><strong>Profilers.</strong> <code>nsys</code> and <code>nsight-compute</code> have ARM64 builds. <code>perf</code> works the same as on x86. PMU events differ (Neoverse V2-specific) &mdash; <code>perf list</code> first.</li>
+        <li><strong>Build farms.</strong> If you produce internal images, your CI must build both amd64 and arm64. <code>docker buildx</code> with QEMU is fine for arm64 from x86 CI runners.</li>
+    </ul>
+
+    <div class="callout">
+        <div class="callout-label">A working rule</div>
+        <p>If your stack is "<em>NGC image &rarr; PyTorch &rarr; HuggingFace model</em>", you will not notice you are on ARM64. If your stack involves <em>compiled-from-source third-party CUDA extensions</em>, you may spend an afternoon producing ARM64 wheels. None of this is hard; it is just one more matrix dimension in CI.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-09">
+    <div class="slide-number">09</div>
+    <h2>DGX Spark &mdash; The Personal GH-Class Workstation</h2>
+    <p>DGX Spark (formerly <em>Project DIGITS</em>) is the consumer-form-factor cousin of GB200. It packages <strong>GB10</strong> &mdash; one Grace + one small Blackwell GPU on a single SoC &mdash; into a desk-sized box, with the same software stack as the rack.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>GB10 SoC</h4>
+            <ul>
+                <li>20-core ARM CPU: Cortex-X925 + Cortex-A725 hybrid (10 + 10)</li>
+                <li>Single Blackwell GPU tile (smaller than B200)</li>
+                <li>Native FP4 / FP8 tensor cores</li>
+                <li>~1 PFLOP FP4 dense compute</li>
+                <li>One die, one package</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Memory</h4>
+            <ul>
+                <li><strong>128 GB unified LPDDR5x</strong> &mdash; one pool, no separate VRAM</li>
+                <li>~273 GB/s bandwidth (single-port LPDDR5x)</li>
+                <li>Same coherent address space model as Grace + GPU</li>
+                <li>No HBM &mdash; all memory is LPDDR5x</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Form factor &amp; price</h4>
+            <ul>
+                <li>~Mac-mini-sized desktop unit</li>
+                <li>Air cooled</li>
+                <li>~$3,000&ndash;$5,000 retail</li>
+                <li>10 GbE on-board, USB-C</li>
+                <li>Runs DGX OS (Ubuntu-derived) by default</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Targets</h4>
+            <ul>
+                <li>Hobbyist / researcher running 70B models locally</li>
+                <li>Prototyping pipelines that later scale to GB200</li>
+                <li>Edge inference for sensitive data</li>
+                <li>Personal copilot / agent dev box</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>What 128 GB unified gets you</h3>
+    <ul>
+        <li><strong>70B at INT4/FP8</strong> with comfortable KV-cache headroom &mdash; you don't need to quantize aggressively.</li>
+        <li><strong>120B-class models</strong> at FP4 fit cleanly. Mixtral-8&times;22B works comfortably.</li>
+        <li>You can hold multiple smaller models resident simultaneously (a 7B + a 13B + a vision encoder) without swap.</li>
+        <li>Dataset prep / RAG indexing locally without worrying about staying under 24 GB.</li>
+    </ul>
+
+    <h3>Same software, different scale</h3>
+    <p>The architectural payoff: code that runs on Spark runs on a GB200 NVL72 with no rewrites. CUDA features detect by capability, not by SKU; <code>cudaMallocManaged</code> behaves identically (just with bigger HBM tiers); ARM64 wheels are the same artifact. <strong>Spark exists so the development cycle does not require the rack.</strong></p>
+
+    <div class="callout">
+        <div class="callout-label">Spark vs an RTX 5090</div>
+        <p>A 5090 has more bandwidth (~1.8 TB/s GDDR7) and more raw compute, so for fits-in-32-GB workloads it wins on tok/s. Spark wins when you need <em>capacity</em>: 128 GB unified beats 32 GB VRAM + slow PCIe to system RAM. Pick by VRAM headroom, not by FLOPS.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-10">
+    <div class="slide-number">10</div>
+    <h2>Performance &mdash; When Grace Wins, When It Doesn't</h2>
+    <p>Grace + C2C is a real architectural shift, but it is not a free win on every workload. Here is where the win is real and where it is not.</p>
+
+    <h3>Where Grace wins</h3>
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Models that almost fit</h4>
+            <p>If your weights + KV cache + optimizer state spill 30&ndash;200 GB out of HBM, GH200 / GB200 keep that spill at C2C bandwidth (~900 GB/s) instead of PCIe (~64 GB/s). 10&times; speed-up on that tier alone.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Data-prep pipelines</h4>
+            <p>72 high-IPC Neoverse V2 cores with SVE2 chew through tokenization, jpeg decode, augmentations &mdash; without burning host&harr;device PCIe bandwidth, because the result lands in shared memory the GPU can already read.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Checkpoint / model loading</h4>
+            <p>A 200 GB checkpoint streams from NVMe via Grace into LPDDR5x at PCIe Gen5 speed, then the GPU pages from LPDDR5x at C2C speed. Cold load time often drops from minutes to under a minute.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Long-context inference</h4>
+            <p>KV cache for 128k+ contexts at high concurrency dwarfs weights. Spilling cold KV pages to LPDDR5x lets you serve 4&ndash;8&times; more concurrent long-context users per HBM-byte than a discrete GPU could.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Vector search / RAG</h4>
+            <p>Hundreds of GB of FAISS / NeMo Retriever index sit happily in LPDDR5x. The GPU pulls hot shards over C2C; queries don't touch PCIe.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Pythonic preprocessing</h4>
+            <p>Grace cores running NumPy / Pandas / DALI compete favourably with x86 once the SVE2 paths are linked. Useful when the host stages are not the bottleneck on x86 either, but become a win because they avoid the PCIe copy.</p>
+        </div>
+    </div>
+
+    <h3>Where Grace doesn't help</h3>
+    <ul>
+        <li><strong>Workloads that fit cleanly in HBM</strong> and never spill. A pure 70B-FP8 inference workload that fits in 96 GB HBM doesn't benefit from EGM at all &mdash; an SXM H100 / H200 server is just as fast.</li>
+        <li><strong>x86-only CUDA kernels.</strong> Rare in 2026 but not zero &mdash; some legacy production codes have hand-tuned host code with AVX-512 intrinsics. Porting to SVE2 is straightforward but a real task.</li>
+        <li><strong>Single-thread Python that doesn't vectorise.</strong> Neoverse V2 single-thread perf is competitive but not always faster than a top-bin Xeon / EPYC. Pure Python code that's GIL-bound runs about the same.</li>
+        <li><strong>Workloads dominated by NIC throughput.</strong> Grace has PCIe Gen5; it does not have a built-in BlueField-class DPU. If your bottleneck is network ingress at 200&ndash;400 Gbps, the choice of CPU is secondary.</li>
+    </ul>
+
+    <h3>Power efficiency</h3>
+    <p>Anecdotal numbers from NVIDIA's 2024 disclosures and customer benchmarks: a GH200 delivers roughly <strong>2&times; perf/W</strong> versus an x86 + PCIe + H100 PCIe equivalent on transformer-training workloads. The win is not from FLOPS &mdash; the GPU dies are the same &mdash; but from skipping PCIe round-trips and from LPDDR5x being substantially more efficient than DDR5.</p>
+
+    <div class="callout">
+        <div class="callout-label">Honest summary</div>
+        <p>Grace is best understood as a <strong>memory-system upgrade</strong> for the GPU, not as a CPU upgrade. The ARM cores are good but not magical. The win comes from one coherent address space and 900 GB/s between CPU and GPU. If your workload doesn't cross that boundary much, Grace is a side-grade. If it does, it is a step change.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-11">
+    <div class="slide-number">11</div>
+    <h2>Interactive: Superchip Picker</h2>
+    <p>Pick a system and a workload. The picker tells you whether the system fits, where the bottleneck is, and gives a one-line verdict.</p>
+
+    <div class="control-panel">
+        <div class="control-row">
+            <label for="sp-sys">System</label>
+            <select id="sp-sys">
+                <option value="gh200_480">GH200 480 GB · Grace + H100 (480 LPDDR5x + 96 HBM3)</option>
+                <option value="gh200_624" selected>GH200 624 GB · Grace + H200 (480 LPDDR5x + 144 HBM3e)</option>
+                <option value="gb200">GB200 · Grace + 2&times; B200 (480 LPDDR5x + 384 HBM3e)</option>
+                <option value="spark">DGX Spark · GB10 (128 GB unified LPDDR5x)</option>
+                <option value="x86h100">x86 + 8&times; H100 SXM5 (HGX, 768 GB HBM3 total)</option>
+            </select>
+        </div>
+        <div class="control-row">
+            <label for="sp-wl">Workload</label>
+            <select id="sp-wl">
+                <option value="inf70">70B inference (FP8 weights, modest KV)</option>
+                <option value="inf405" selected>405B inference (FP8, long context)</option>
+                <option value="ft405">405B fine-tune (FP8 + optimizer state)</option>
+                <option value="moe1t">1T MoE training (FP8 + sharded experts)</option>
+                <option value="prep">Data prep + RAG indexing</option>
+            </select>
+        </div>
+        <div id="sp-out" class="result-box"></div>
+        <div class="metric-grid">
+            <div class="metric"><div class="metric-label">Total HBM</div><div class="metric-value" id="m-hbm">—</div></div>
+            <div class="metric"><div class="metric-label">Total LPDDR5x</div><div class="metric-value" id="m-lpd">—</div></div>
+            <div class="metric"><div class="metric-label">FP8 PFLOPS</div><div class="metric-value" id="m-flops">—</div></div>
+            <div class="metric"><div class="metric-label">Host&harr;device path</div><div class="metric-value" id="m-link">—</div></div>
+            <div class="metric"><div class="metric-label">CPU cores</div><div class="metric-value" id="m-cpu">—</div></div>
+        </div>
+    </div>
+
+    <script>
+    (function(){
+        const systems = {
+            'gh200_480': { name:'GH200 480GB',   hbm:96,  lpd:480, fp8:4,  link:'C2C 900 GB/s', cpu:'72 Neoverse V2', cpuArch:'arm' },
+            'gh200_624': { name:'GH200 624GB',   hbm:144, lpd:480, fp8:4,  link:'C2C 900 GB/s', cpu:'72 Neoverse V2', cpuArch:'arm' },
+            'gb200':     { name:'GB200',         hbm:384, lpd:480, fp8:9,  link:'2&times; C2C 900 GB/s', cpu:'72 Neoverse V2', cpuArch:'arm' },
+            'spark':     { name:'DGX Spark',     hbm:0,   lpd:128, fp8:0.5,link:'on-die unified', cpu:'20 X925/A725', cpuArch:'arm' },
+            'x86h100':   { name:'x86 + 8&times; H100', hbm:640, lpd:0, fp8:32, link:'PCIe Gen5 ~64 GB/s per GPU', cpu:'2&times; Xeon / EPYC', cpuArch:'x86' }
+        };
+        const workloads = {
+            'inf70': {
+                name:'70B inference',
+                hbmNeed:80,  spill:20,
+                msg:s => {
+                    if (s === 'spark') return 'Fits in Spark\'s 128 GB unified, but bandwidth-bound at ~273 GB/s &mdash; expect ~10&ndash;20 tok/s single-stream. Fine for personal use.';
+                    if (s === 'x86h100') return 'Trivial &mdash; one H100 80 GB does this. Seven other H100s sit idle unless you batch hard.';
+                    if (s === 'gh200_480') return 'Fits HBM cleanly; LPDDR5x mostly unused. Side-grade vs an SXM H100, no dramatic win here.';
+                    if (s === 'gh200_624') return 'Comfortable fit in 144 GB HBM3e; KV scales nicely. Good single-superchip choice for 70B.';
+                    return '384 GB HBM is overkill for 70B. Use one B200 or split GB200 into per-GPU replicas.';
+                }
+            },
+            'inf405': {
+                name:'405B long-context inference',
+                hbmNeed:420, spill:200,
+                msg:s => {
+                    if (s === 'spark') return 'Will not fit. 405B FP8 weights alone are ~405 GB &mdash; you need a real superchip or a rack.';
+                    if (s === 'x86h100') return 'Needs all 8 H100s with TP=8. Long-context KV stresses HBM; PCIe-only host link means weights must stay resident in HBM (no useful LPDDR fallback).';
+                    if (s === 'gh200_480') return 'Tight: 405 GB weights barely fit in HBM if sharded across multiple GH200s. Single-superchip is not enough.';
+                    if (s === 'gh200_624') return 'Doable with 2&ndash;3 GH200 624 over NVLink + IB; KV cache spills to LPDDR5x at C2C speed. Real win on long-context.';
+                    return 'Single GB200: weights fit one B200 pair; KV spills to 480 GB LPDDR5x at 900 GB/s C2C &mdash; healthy concurrency for 128k+ contexts.';
+                }
+            },
+            'ft405': {
+                name:'405B fine-tune',
+                hbmNeed:600, spill:1500,
+                msg:s => {
+                    if (s === 'spark') return 'Not even close.';
+                    if (s === 'x86h100') return 'Possible with FSDP + ZeRO-3 across 8 GPUs, but optimizer state offload to host hits PCIe 64 GB/s wall &mdash; training is host-link-bound.';
+                    if (s === 'gh200_480' || s === 'gh200_624') return 'Tens of GH200 needed; optimizer state offload to LPDDR5x is the win &mdash; each Grace holds ~480 GB of moments at C2C bandwidth.';
+                    return 'A single GB200 is not enough for 405B fine-tune; you need an NVL72. But the architecture (Grace LPDDR5x for optimizer state) is exactly what 405B FT wants.';
+                }
+            },
+            'moe1t': {
+                name:'1T MoE training',
+                hbmNeed:1500, spill:5000,
+                msg:s => {
+                    if (s === 'spark' || s === 'gh200_480' || s === 'gh200_624') return 'Not at this scale &mdash; you need an NVL72 (or two).';
+                    if (s === 'x86h100') return 'Cluster-only: many HGX trays + IB + EP across hundreds of GPUs. Doable but PCIe is the constant tax.';
+                    return 'GB200 wins for 1T MoE because the 22 TB unified memory in one NVL72 fits the optimizer state with zero spill, and EP across 72 GPUs in one NVLink domain stays inside the rack.';
+                }
+            },
+            'prep': {
+                name:'Data prep + RAG',
+                hbmNeed:0,   spill:200,
+                msg:s => {
+                    if (s === 'spark') return 'Excellent fit: 20 ARM cores + 128 GB unified handle a few-hundred-GB index comfortably for personal RAG.';
+                    if (s === 'x86h100') return 'Your CPU does the work; GPUs sit idle. PCIe is a tax on every batch you send to a GPU encoder.';
+                    if (s === 'gh200_480' || s === 'gh200_624') return '72 Neoverse V2 cores + 480 GB LPDDR5x + C2C to the GPU encoder = best-in-class data-prep node.';
+                    return 'Overkill on GPU; the 480 GB LPDDR5x and 72 cores are the real asset for prep workloads.';
+                }
+            }
+        };
+
+        function rec(){
+            const sk = document.getElementById('sp-sys').value;
+            const wk = document.getElementById('sp-wl').value;
+            const s = systems[sk];
+            const w = workloads[wk];
+
+            document.getElementById('m-hbm').textContent   = s.hbm  + ' GB';
+            document.getElementById('m-lpd').textContent   = s.lpd  + ' GB';
+            document.getElementById('m-flops').textContent = s.fp8  + ' PF';
+            document.getElementById('m-link').innerHTML    = s.link;
+            document.getElementById('m-cpu').textContent   = s.cpu;
+
+            // verdict
+            const fitHBM = s.hbm >= w.hbmNeed;
+            const fitTotal = (s.hbm + s.lpd) >= (w.hbmNeed + w.spill);
+            let head;
+            if (fitHBM && fitTotal) {
+                head = '<span class="badge ok">good fit</span>';
+            } else if (fitTotal) {
+                head = '<span class="badge warn">fits with spill to LPDDR5x</span>';
+            } else if (s.hbm >= w.hbmNeed) {
+                head = '<span class="badge warn">HBM fits, optimizer/KV tight</span>';
+            } else {
+                head = '<span class="badge bad">not enough memory in one unit</span>';
+            }
+
+            const verdict = w.msg(sk);
+
+            document.getElementById('sp-out').innerHTML =
+                '<div style="margin-bottom:0.4rem;"><span class="line-label">' + s.name + ' &times; ' + w.name + '</span> &nbsp; ' + head + '</div>' +
+                '<div style="color:var(--text-secondary);">' + verdict + '</div>';
+        }
+        document.getElementById('sp-sys').addEventListener('change', rec);
+        document.getElementById('sp-wl').addEventListener('change', rec);
+        rec();
+    })();
+    </script>
+</section>
+
+<!-- ════════════════════════════════════ Footer ════════════════════════════════════ -->
+<footer class="footer">
+    <p>Part of the <a href="https://github.com/BrendanJamesLynskey/LLMs#nvidia-gpu-architectures">NVIDIA GPU Architectures Series</a></p>
+    <p style="margin-top: 0.5rem; font-size: 0.8rem;"><a href="https://github.com/BrendanJamesLynskey/LLMs#nvidia-gpu-architectures">Back to Series Index</a></p>
+</footer>
+
+<script>
+    // Smooth scroll for TOC links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+
+    // Subtle fade-in on scroll
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.slide').forEach(slide => {
+        slide.style.opacity = '0';
+        slide.style.transform = 'translateY(30px)';
+        slide.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(slide);
+    });
+</script>
+
+</body>
+</html>
