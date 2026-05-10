@@ -900,8 +900,8 @@
             <h4>Memory</h4>
             <ul>
                 <li><strong>On-package LPDDR5x</strong> (no DIMMs)</li>
-                <li>Grace 480 GB SKU: <strong>~480 GB/s</strong></li>
-                <li>Grace 960 GB SKU: <strong>~720 GB/s</strong></li>
+                <li>Per-Grace capacity: <strong>480 GB</strong></li>
+                <li>Per-Grace bandwidth: <strong>~500 GB/s</strong></li>
                 <li>ECC throughout</li>
                 <li>Lower power per GB than DDR5</li>
             </ul>
@@ -917,14 +917,13 @@
         </div>
     </div>
 
-    <h3>Two SKUs &mdash; capacity vs. bandwidth</h3>
+    <h3>Grace products</h3>
     <div class="table-wrap">
         <table>
-            <thead><tr><th>SKU</th><th>LPDDR5x capacity</th><th>LPDDR5x bandwidth</th><th>Typical use</th></tr></thead>
+            <thead><tr><th>Product</th><th>LPDDR5x capacity</th><th>LPDDR5x bandwidth</th><th>Typical use</th></tr></thead>
             <tbody>
-                <tr><td><strong>Grace 480GB</strong></td><td>480 GB on-package</td><td>~480 GB/s</td><td>Paired with H100 (GH200), most GB200 builds</td></tr>
-                <tr><td><strong>Grace 960GB</strong></td><td>960 GB on-package</td><td>~720 GB/s</td><td>Standalone Grace CPU Superchip (2&times; Grace), HPC nodes</td></tr>
-                <tr><td>Grace CPU Superchip</td><td>2&times; 480 = 960 GB</td><td>2&times; ~480 GB/s</td><td>Two Grace dies on one module via NVLink-C2C, no GPU</td></tr>
+                <tr><td><strong>Grace (single die)</strong></td><td>480 GB on-package</td><td>~500 GB/s</td><td>Paired with H100/H200 (GH200), each Grace in GB200</td></tr>
+                <tr><td><strong>Grace CPU Superchip</strong></td><td>2&times; 480 = 960 GB</td><td>2&times; ~500 GB/s</td><td>Two Grace dies on one module via NVLink-C2C, no GPU; HPC nodes (uncommon)</td></tr>
             </tbody>
         </table>
     </div>
@@ -1087,11 +1086,11 @@
             </ul>
         </div>
         <div class="diagram-panel accent-border">
-            <h4>GH200 624GB</h4>
+            <h4>GH200 with H200</h4>
             <ul>
                 <li>Grace 480 GB LPDDR5x</li>
-                <li>144 GB <strong>HBM3e</strong> (this is the "H200" inside)</li>
-                <li>Total unified: <strong>624 GB</strong></li>
+                <li>141 GB <strong>HBM3e</strong> (this is the "H200" inside)</li>
+                <li>Total unified: <strong>621 GB</strong></li>
                 <li>HBM3e bandwidth ~4.8 TB/s</li>
                 <li>Refreshed 2024 &mdash; the volume Helios / Alps part</li>
             </ul>
@@ -1102,7 +1101,7 @@
     <ul>
         <li><strong>HGX-style baseboard with 8&times; GH200</strong> &mdash; 8 superchips on one tray, NVLink between them via NVSwitch. Roughly the GH200 equivalent of an HGX H100 tray.</li>
         <li><strong>Single-module 1U servers</strong> &mdash; one GH200 per chassis, optimised for density and power. Used in many of the GH200-based supercomputers.</li>
-        <li><strong>Multi-node clusters</strong> &mdash; <em>Alps</em> (CSCS, Switzerland) and <em>Helios</em> are the two flagship deployments; both rely on GH200 624GB.</li>
+        <li><strong>Multi-node clusters</strong> &mdash; <em>Alps</em> (CSCS, Switzerland) and <em>Helios</em> are the two flagship deployments; both rely on GH200 with the H200 (141 GB HBM3e) variant.</li>
     </ul>
 
     <h3>Why a 100B model fits a single GH200 cleanly</h3>
@@ -1203,7 +1202,7 @@
 
     <div class="callout">
         <div class="callout-label">The building block of NVL72</div>
-        <p>GB200 is not really a server CPU; it's the unit cell of the rack. A GB200 NVL72 rack contains 18 of these, glued together by NVLink Switch trays into a single 72-GPU coherent NVLink domain. Everything else &mdash; cooling design, power delivery, copper backplane &mdash; flows from this choice.</p>
+        <p>GB200 is not really a server CPU; it's the unit cell of the rack. A GB200 NVL72 rack contains 36 of these (2 per compute tray &times; 18 trays), glued together by NVLink Switch trays into a single 72-GPU coherent NVLink domain. Everything else &mdash; cooling design, power delivery, copper backplane &mdash; flows from this choice.</p>
     </div>
 </section>
 
@@ -1228,7 +1227,7 @@
         </div>
         <div class="tier-bar">
             <div class="tier-label">LPDDR5x (Grace)</div>
-            <div class="tier-fill" style="width: 30%; background: linear-gradient(90deg, rgba(118,185,0,0.45), rgba(118,185,0,0.10)); color: #76B900;">~480&ndash;720 GB/s · ~10&times; HBM latency</div>
+            <div class="tier-fill" style="width: 30%; background: linear-gradient(90deg, rgba(118,185,0,0.45), rgba(118,185,0,0.10)); color: #76B900;">~500 GB/s · ~10&times; HBM latency</div>
             <div class="tier-cost">~480 GB</div>
         </div>
         <div class="tier-bar">
@@ -1314,27 +1313,27 @@ my_kernel&lt;&lt;&lt;blocks, threads&gt;&gt;&gt;(x, bytes);   <span class="cm">/
             <!-- pattern: compute(9), switch(9 between), compute(9). For simplicity show 18 compute + 9 switch interleaved -->
             <g>
                 <!-- top half -->
-                <rect x="210" y="75"  width="300" height="12" class="ct"/><text x="220" y="84" class="t">Compute · GB200 #1 (Grace + 2&times; B200)</text>
-                <rect x="210" y="89"  width="300" height="12" class="ct"/><text x="220" y="98" class="t">Compute · GB200 #2</text>
-                <rect x="210" y="103" width="300" height="12" class="ct"/><text x="220" y="112" class="t">Compute · GB200 #3</text>
-                <rect x="210" y="117" width="300" height="12" class="ct"/><text x="220" y="126" class="t">Compute · GB200 #4</text>
-                <rect x="210" y="131" width="300" height="12" class="ct"/><text x="220" y="140" class="t">Compute · GB200 #5</text>
-                <rect x="210" y="145" width="300" height="12" class="ct"/><text x="220" y="154" class="t">Compute · GB200 #6</text>
-                <rect x="210" y="159" width="300" height="12" class="ct"/><text x="220" y="168" class="t">Compute · GB200 #7</text>
-                <rect x="210" y="173" width="300" height="12" class="ct"/><text x="220" y="182" class="t">Compute · GB200 #8</text>
-                <rect x="210" y="187" width="300" height="12" class="ct"/><text x="220" y="196" class="t">Compute · GB200 #9</text>
+                <rect x="210" y="75"  width="300" height="12" class="ct"/><text x="220" y="84" class="t">Compute tray #1 · 2&times; GB200 (2 Grace + 4 B200)</text>
+                <rect x="210" y="89"  width="300" height="12" class="ct"/><text x="220" y="98" class="t">Compute tray #2 · 2&times; GB200</text>
+                <rect x="210" y="103" width="300" height="12" class="ct"/><text x="220" y="112" class="t">Compute tray #3 · 2&times; GB200</text>
+                <rect x="210" y="117" width="300" height="12" class="ct"/><text x="220" y="126" class="t">Compute tray #4 · 2&times; GB200</text>
+                <rect x="210" y="131" width="300" height="12" class="ct"/><text x="220" y="140" class="t">Compute tray #5 · 2&times; GB200</text>
+                <rect x="210" y="145" width="300" height="12" class="ct"/><text x="220" y="154" class="t">Compute tray #6 · 2&times; GB200</text>
+                <rect x="210" y="159" width="300" height="12" class="ct"/><text x="220" y="168" class="t">Compute tray #7 · 2&times; GB200</text>
+                <rect x="210" y="173" width="300" height="12" class="ct"/><text x="220" y="182" class="t">Compute tray #8 · 2&times; GB200</text>
+                <rect x="210" y="187" width="300" height="12" class="ct"/><text x="220" y="196" class="t">Compute tray #9 · 2&times; GB200</text>
 
                 <!-- middle: 9 NVLink switches in one band -->
                 <rect x="210" y="203" width="300" height="60" class="sw"/>
                 <text x="360" y="222" class="t" text-anchor="middle" style="fill:#d2a8ff;font-weight:700;">9&times; NVLink Switch trays</text>
                 <text x="360" y="240" class="t" text-anchor="middle">copper backplane &mdash; all 72 B200 in one NVLink-5 domain</text>
 
-                <rect x="210" y="267" width="300" height="12" class="ct"/><text x="220" y="276" class="t">Compute · GB200 #10</text>
-                <rect x="210" y="281" width="300" height="12" class="ct"/><text x="220" y="290" class="t">Compute · GB200 #11</text>
-                <rect x="210" y="295" width="300" height="12" class="ct"/><text x="220" y="304" class="t">Compute · GB200 #12</text>
-                <rect x="210" y="309" width="300" height="12" class="ct"/><text x="220" y="318" class="t">Compute · GB200 #13</text>
-                <rect x="210" y="323" width="300" height="12" class="ct"/><text x="220" y="332" class="t">Compute · GB200 #14</text>
-                <rect x="210" y="337" width="300" height="12" class="ct"/><text x="220" y="346" class="t">Compute · GB200 #15&ndash;18</text>
+                <rect x="210" y="267" width="300" height="12" class="ct"/><text x="220" y="276" class="t">Compute tray #10 · 2&times; GB200</text>
+                <rect x="210" y="281" width="300" height="12" class="ct"/><text x="220" y="290" class="t">Compute tray #11 · 2&times; GB200</text>
+                <rect x="210" y="295" width="300" height="12" class="ct"/><text x="220" y="304" class="t">Compute tray #12 · 2&times; GB200</text>
+                <rect x="210" y="309" width="300" height="12" class="ct"/><text x="220" y="318" class="t">Compute tray #13 · 2&times; GB200</text>
+                <rect x="210" y="323" width="300" height="12" class="ct"/><text x="220" y="332" class="t">Compute tray #14 · 2&times; GB200</text>
+                <rect x="210" y="337" width="300" height="12" class="ct"/><text x="220" y="346" class="t">Compute tray #15&ndash;18 · 2&times; GB200 each</text>
             </g>
 
             <!-- side annotations -->
@@ -1342,22 +1341,22 @@ my_kernel&lt;&lt;&lt;blocks, threads&gt;&gt;&gt;(x, bytes);   <span class="cm">/
             <text x="195" y="160" class="lbl" text-anchor="end">~120 kW</text>
             <text x="195" y="320" class="lbl" text-anchor="end">hot return</text>
             <text x="525" y="100" class="lbl">18 compute trays</text>
-            <text x="525" y="115" class="lbl">= 18 Grace</text>
-            <text x="525" y="130" class="lbl">= 36 B200 GPUs</text>
+            <text x="525" y="115" class="lbl">= 36 GB200</text>
+            <text x="525" y="130" class="lbl">= 36 Grace + 72 B200</text>
             <text x="525" y="160" class="lbl">9 switch trays</text>
             <text x="525" y="175" class="lbl">copper, not optical</text>
-            <text x="525" y="320" class="lbl">~22 TB total</text>
+            <text x="525" y="320" class="lbl">~31 TB total</text>
             <text x="525" y="335" class="lbl">unified memory</text>
         </svg>
     </div>
 
     <h3>The numbers</h3>
     <ul>
-        <li><strong>18 compute trays</strong>, one GB200 each &rarr; <strong>18 Grace + 36 B200</strong> per rack (each GB200 has 2 B200 dies).</li>
+        <li><strong>18 compute trays</strong>, two GB200 superchips each &rarr; <strong>36 GB200 = 36 Grace + 72 B200</strong> per rack (each GB200 superchip has 1 Grace + 2 B200).</li>
         <li><strong>9 NVLink Switch trays</strong> in the middle, copper backplane between trays.</li>
-        <li><strong>HBM3e total:</strong> 36 &times; 192 GB = <strong>13.5 TB</strong> across all GPUs (with the 384 GB/superchip number, 18 &times; 384 ~ 6.9 TB per side counted differently &mdash; the 13.5 TB figure is the HBM3e aggregate when both B200 dies in each GB200 are counted).</li>
-        <li><strong>Grace LPDDR5x total:</strong> 18 &times; 480 GB = <strong>8.6 TB</strong>.</li>
-        <li><strong>Aggregate addressable memory:</strong> ~<strong>22 TB</strong> coherent across the rack from any GPU.</li>
+        <li><strong>HBM3e total:</strong> 72 &times; 192 GB = <strong>~13.8 TB</strong> across all 72 B200 GPUs.</li>
+        <li><strong>Grace LPDDR5x total:</strong> 36 &times; 480 GB = <strong>~17.3 TB</strong>.</li>
+        <li><strong>Aggregate addressable memory:</strong> ~<strong>31 TB</strong> coherent across the rack from any GPU.</li>
         <li><strong>NVLink 5 fabric:</strong> 1.8 TB/s per GPU pair, all 72 B200 dies in <em>one</em> NVLink domain. No InfiniBand needed inside a rack.</li>
         <li>Power: ~120 kW per rack. Liquid cooling mandatory; air-cooled NVL72 is not a thing.</li>
     </ul>
@@ -1548,8 +1547,8 @@ docker buildx build \
         <div class="control-row">
             <label for="sp-sys">System</label>
             <select id="sp-sys">
-                <option value="gh200_480">GH200 480 GB · Grace + H100 (480 LPDDR5x + 96 HBM3)</option>
-                <option value="gh200_624" selected>GH200 624 GB · Grace + H200 (480 LPDDR5x + 144 HBM3e)</option>
+                <option value="gh200_480">GH200 · Grace + H100 (480 LPDDR5x + 96 HBM3)</option>
+                <option value="gh200_624" selected>GH200 · Grace + H200 (480 LPDDR5x + 141 HBM3e)</option>
                 <option value="gb200">GB200 · Grace + 2&times; B200 (480 LPDDR5x + 384 HBM3e)</option>
                 <option value="spark">DGX Spark · GB10 (128 GB unified LPDDR5x)</option>
                 <option value="x86h100">x86 + 8&times; H100 SXM5 (HGX, 768 GB HBM3 total)</option>
@@ -1578,8 +1577,8 @@ docker buildx build \
     <script>
     (function(){
         const systems = {
-            'gh200_480': { name:'GH200 480GB',   hbm:96,  lpd:480, fp8:4,  link:'C2C 900 GB/s', cpu:'72 Neoverse V2', cpuArch:'arm' },
-            'gh200_624': { name:'GH200 624GB',   hbm:144, lpd:480, fp8:4,  link:'C2C 900 GB/s', cpu:'72 Neoverse V2', cpuArch:'arm' },
+            'gh200_480': { name:'GH200 (H100)',  hbm:96,  lpd:480, fp8:4,  link:'C2C 900 GB/s', cpu:'72 Neoverse V2', cpuArch:'arm' },
+            'gh200_624': { name:'GH200 (H200)',  hbm:141, lpd:480, fp8:4,  link:'C2C 900 GB/s', cpu:'72 Neoverse V2', cpuArch:'arm' },
             'gb200':     { name:'GB200',         hbm:384, lpd:480, fp8:9,  link:'2&times; C2C 900 GB/s', cpu:'72 Neoverse V2', cpuArch:'arm' },
             'spark':     { name:'DGX Spark',     hbm:0,   lpd:128, fp8:0.5,link:'on-die unified', cpu:'20 X925/A725', cpuArch:'arm' },
             'x86h100':   { name:'x86 + 8&times; H100', hbm:640, lpd:0, fp8:32, link:'PCIe Gen5 ~64 GB/s per GPU', cpu:'2&times; Xeon / EPYC', cpuArch:'x86' }
@@ -1592,7 +1591,7 @@ docker buildx build \
                     if (s === 'spark') return 'Fits in Spark\'s 128 GB unified, but bandwidth-bound at ~273 GB/s &mdash; expect ~10&ndash;20 tok/s single-stream. Fine for personal use.';
                     if (s === 'x86h100') return 'Trivial &mdash; one H100 80 GB does this. Seven other H100s sit idle unless you batch hard.';
                     if (s === 'gh200_480') return 'Fits HBM cleanly; LPDDR5x mostly unused. Side-grade vs an SXM H100, no dramatic win here.';
-                    if (s === 'gh200_624') return 'Comfortable fit in 144 GB HBM3e; KV scales nicely. Good single-superchip choice for 70B.';
+                    if (s === 'gh200_624') return 'Comfortable fit in 141 GB HBM3e; KV scales nicely. Good single-superchip choice for 70B.';
                     return '384 GB HBM is overkill for 70B. Use one B200 or split GB200 into per-GPU replicas.';
                 }
             },
@@ -1603,7 +1602,7 @@ docker buildx build \
                     if (s === 'spark') return 'Will not fit. 405B FP8 weights alone are ~405 GB &mdash; you need a real superchip or a rack.';
                     if (s === 'x86h100') return 'Needs all 8 H100s with TP=8. Long-context KV stresses HBM; PCIe-only host link means weights must stay resident in HBM (no useful LPDDR fallback).';
                     if (s === 'gh200_480') return 'Tight: 405 GB weights barely fit in HBM if sharded across multiple GH200s. Single-superchip is not enough.';
-                    if (s === 'gh200_624') return 'Doable with 2&ndash;3 GH200 624 over NVLink + IB; KV cache spills to LPDDR5x at C2C speed. Real win on long-context.';
+                    if (s === 'gh200_624') return 'Doable with 2&ndash;3 GH200 (H200) over NVLink + IB; KV cache spills to LPDDR5x at C2C speed. Real win on long-context.';
                     return 'Single GB200: weights fit one B200 pair; KV spills to 480 GB LPDDR5x at 900 GB/s C2C &mdash; healthy concurrency for 128k+ contexts.';
                 }
             },
@@ -1623,7 +1622,7 @@ docker buildx build \
                 msg:s => {
                     if (s === 'spark' || s === 'gh200_480' || s === 'gh200_624') return 'Not at this scale &mdash; you need an NVL72 (or two).';
                     if (s === 'x86h100') return 'Cluster-only: many HGX trays + IB + EP across hundreds of GPUs. Doable but PCIe is the constant tax.';
-                    return 'GB200 wins for 1T MoE because the 22 TB unified memory in one NVL72 fits the optimizer state with zero spill, and EP across 72 GPUs in one NVLink domain stays inside the rack.';
+                    return 'GB200 wins for 1T MoE because the ~31 TB unified memory in one NVL72 fits the optimizer state with zero spill, and EP across 72 GPUs in one NVLink domain stays inside the rack.';
                 }
             },
             'prep': {
