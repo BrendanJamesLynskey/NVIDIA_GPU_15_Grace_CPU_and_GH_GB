@@ -9,15 +9,15 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0a0a0a;
-            --bg-card: #0d1117;
-            --bg-code: #161b22;
-            --text-primary: #e6edf3;
-            --text-secondary: #8b949e;
-            --accent: #76B900;
-            --accent-dim: #76B90044;
-            --accent-glow: #76B90033;
-            --border: #21262d;
+            --bg-primary: #1b1b1a;
+            --bg-card: #212120;
+            --bg-code: #292928;
+            --text-primary: #edede7;
+            --text-secondary: #9b9b95;
+            --accent: #b8b315;
+            --accent-dim: #b8b31544;
+            --accent-glow: #b8b31533;
+            --border: #363633;
             --font-display: 'Space Grotesk', sans-serif;
             --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
             --font-body: 'Inter', sans-serif;
@@ -228,7 +228,7 @@
             font-family: var(--font-mono);
             font-size: 0.75rem;
             color: var(--accent);
-            background: rgba(118, 185, 0, 0.08);
+            background: rgba(184,179,21,0.08);
             padding: 0.4rem 1rem;
             border-bottom: 1px solid var(--border);
         }
@@ -243,18 +243,18 @@
             font-family: var(--font-mono);
             font-size: 0.85rem;
             line-height: 1.6;
-            color: #c9d1d9;
+            color: #d5d5cf;
         }
 
         /* Syntax highlighting (manual) */
-        .kw { color: #ff7b72; }
-        .fn { color: #d2a8ff; }
-        .str { color: #a5d6ff; }
-        .cm { color: #8b949e; font-style: italic; }
-        .num { color: #79c0ff; }
-        .type { color: #ffa657; }
-        .dir { color: #ff7b72; }
-        .mac { color: #ffa657; }
+        .kw { color: #e57d63; }
+        .fn { color: #d1c2e1; }
+        .str { color: #c9dbe2; }
+        .cm { color: #9b9b95; font-style: italic; }
+        .num { color: #afcbd8; }
+        .type { color: #e0b172; }
+        .dir { color: #e57d63; }
+        .mac { color: #e0b172; }
 
         /* ── Tables ── */
         .table-wrap {
@@ -292,7 +292,7 @@
         }
 
         tr:nth-child(even) td {
-            background: rgba(13, 17, 23, 0.5);
+            background: rgba(33,33,32,0.5);
         }
 
         /* ── Diagrams ── */
@@ -324,7 +324,7 @@
         .diagram-box.accent {
             border-color: var(--accent);
             color: var(--accent);
-            background: rgba(118, 185, 0, 0.08);
+            background: rgba(184,179,21,0.08);
         }
 
         .diagram-box.dim {
@@ -400,7 +400,7 @@
         .hierarchy-item.accent {
             border-color: var(--accent);
             color: var(--accent);
-            background: rgba(118, 185, 0, 0.08);
+            background: rgba(184,179,21,0.08);
         }
 
         /* Grid diagram */
@@ -673,7 +673,7 @@
             cursor: pointer;
             transition: background 0.15s ease;
         }
-        .btn:hover { background: rgba(118, 185, 0, 0.2); }
+        .btn:hover { background: rgba(184,179,21,0.2); }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn.secondary {
             background: var(--bg-code);
@@ -750,8 +750,8 @@
             margin-left: 0.3rem;
         }
         .badge.ok    { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
-        .badge.warn  { border-color: #ffa657; color: #ffa657; background: rgba(255,166,87,0.08); }
-        .badge.bad   { border-color: #ff7b72; color: #ff7b72; background: rgba(255,123,114,0.08); }
+        .badge.warn  { border-color: #e0b172; color: #e0b172; background: rgba(224,177,114,0.08); }
+        .badge.bad   { border-color: #e57d63; color: #e57d63; background: rgba(229,125,99,0.08); }
 
     </style>
 </head>
@@ -830,13 +830,13 @@
     <div class="canvas-wrap">
         <svg viewBox="0 0 720 240" width="720" height="240" xmlns="http://www.w3.org/2000/svg">
             <style>
-                .axis { stroke: #21262d; }
-                .pcie { fill: rgba(255,123,114,0.35); stroke: #ff7b72; }
-                .nvl  { fill: rgba(118,185,0,0.40); stroke: #76B900; }
-                .hbm  { fill: rgba(255,166,87,0.35); stroke: #ffa657; }
-                .lbl  { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-                .val  { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; }
-                .h    { fill: #e6edf3; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+                .axis { stroke: #363633; }
+                .pcie { fill: rgba(229,125,99,0.35); stroke: #e57d63; }
+                .nvl  { fill: rgba(184,179,21,0.40); stroke: #b8b315; }
+                .hbm  { fill: rgba(224,177,114,0.35); stroke: #e0b172; }
+                .lbl  { fill: #9b9b95; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .val  { fill: #edede7; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; }
+                .h    { fill: #edede7; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
             </style>
             <text x="10" y="18" class="h">CPU&harr;GPU path bandwidth &mdash; GB/s, log-ish scale</text>
             <line x1="190" y1="32" x2="190" y2="220" class="axis"/>
@@ -931,12 +931,12 @@
     <div class="canvas-wrap">
         <svg viewBox="0 0 720 220" width="720" height="220" xmlns="http://www.w3.org/2000/svg">
             <style>
-                .pkg { fill: #161b22; stroke: #30363d; }
-                .core { fill: rgba(118,185,0,0.18); stroke: #76B900; }
-                .l3   { fill: rgba(210,168,255,0.20); stroke: #d2a8ff; }
-                .mem  { fill: rgba(255,166,87,0.20); stroke: #ffa657; }
-                .t    { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
-                .h    { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+                .pkg { fill: #292928; stroke: #42423e; }
+                .core { fill: rgba(184,179,21,0.18); stroke: #b8b315; }
+                .l3   { fill: rgba(209,194,225,0.20); stroke: #d1c2e1; }
+                .mem  { fill: rgba(224,177,114,0.20); stroke: #e0b172; }
+                .t    { fill: #edede7; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+                .h    { fill: #b8b315; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
             </style>
             <text x="10" y="18" class="h">Grace die &mdash; schematic floor-plan</text>
             <rect x="20" y="30" width="680" height="170" class="pkg"/>
@@ -1000,21 +1000,21 @@
     <div class="canvas-wrap">
         <svg viewBox="0 0 720 230" width="720" height="230" xmlns="http://www.w3.org/2000/svg">
             <style>
-                .pkg  { fill: #0d1117; stroke: #30363d; }
-                .die  { fill: #161b22; stroke: #76B900; }
-                .mem  { fill: rgba(255,166,87,0.25); stroke: #ffa657; }
-                .lpd  { fill: rgba(118,185,0,0.20); stroke: #76B900; }
-                .link { stroke: #76B900; stroke-width: 6; fill: none; }
-                .h    { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
-                .t    { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-                .lbl  { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+                .pkg  { fill: #212120; stroke: #42423e; }
+                .die  { fill: #292928; stroke: #b8b315; }
+                .mem  { fill: rgba(224,177,114,0.25); stroke: #e0b172; }
+                .lpd  { fill: rgba(184,179,21,0.20); stroke: #b8b315; }
+                .link { stroke: #b8b315; stroke-width: 6; fill: none; }
+                .h    { fill: #b8b315; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+                .t    { fill: #edede7; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .lbl  { fill: #9b9b95; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
             </style>
             <text x="10" y="18" class="h">Grace + GPU on one module &mdash; the C2C link</text>
             <rect x="20" y="30" width="680" height="180" class="pkg"/>
 
             <!-- Grace -->
             <rect x="60" y="60" width="220" height="120" class="die"/>
-            <text x="170" y="85" class="t" text-anchor="middle" style="fill:#76B900;font-weight:700;">GRACE CPU</text>
+            <text x="170" y="85" class="t" text-anchor="middle" style="fill:#b8b315;font-weight:700;">GRACE CPU</text>
             <text x="170" y="105" class="t" text-anchor="middle">72&times; Neoverse V2</text>
             <text x="170" y="125" class="t" text-anchor="middle">117 MB L3</text>
             <text x="170" y="145" class="t" text-anchor="middle">SVE2 vector</text>
@@ -1027,11 +1027,11 @@
             <!-- C2C link -->
             <line x1="280" y1="120" x2="440" y2="120" class="link"/>
             <text x="360" y="110" class="lbl" text-anchor="middle">NVLink-C2C</text>
-            <text x="360" y="138" class="lbl" text-anchor="middle" style="fill:#76B900;">900 GB/s coherent</text>
+            <text x="360" y="138" class="lbl" text-anchor="middle" style="fill:#b8b315;">900 GB/s coherent</text>
 
             <!-- GPU -->
             <rect x="440" y="60" width="220" height="120" class="die"/>
-            <text x="550" y="85" class="t" text-anchor="middle" style="fill:#76B900;font-weight:700;">HOPPER / BLACKWELL</text>
+            <text x="550" y="85" class="t" text-anchor="middle" style="fill:#b8b315;font-weight:700;">HOPPER / BLACKWELL</text>
             <text x="550" y="105" class="t" text-anchor="middle">SMs + Tensor Cores</text>
             <text x="550" y="125" class="t" text-anchor="middle">L2 + TMA</text>
 
@@ -1131,29 +1131,29 @@
     <div class="canvas-wrap">
         <svg viewBox="0 0 720 280" width="720" height="280" xmlns="http://www.w3.org/2000/svg">
             <style>
-                .pkg  { fill: #0d1117; stroke: #30363d; }
-                .die  { fill: #161b22; stroke: #76B900; }
-                .lpd  { fill: rgba(118,185,0,0.18); stroke: #76B900; }
-                .hbm  { fill: rgba(255,166,87,0.20); stroke: #ffa657; }
-                .c2c  { stroke: #76B900; stroke-width: 5; fill: none; }
-                .nvl  { stroke: #d2a8ff; stroke-width: 4; fill: none; stroke-dasharray: 4 3; }
-                .h    { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
-                .t    { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-                .lbl  { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+                .pkg  { fill: #212120; stroke: #42423e; }
+                .die  { fill: #292928; stroke: #b8b315; }
+                .lpd  { fill: rgba(184,179,21,0.18); stroke: #b8b315; }
+                .hbm  { fill: rgba(224,177,114,0.20); stroke: #e0b172; }
+                .c2c  { stroke: #b8b315; stroke-width: 5; fill: none; }
+                .nvl  { stroke: #d1c2e1; stroke-width: 4; fill: none; stroke-dasharray: 4 3; }
+                .h    { fill: #b8b315; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+                .t    { fill: #edede7; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .lbl  { fill: #9b9b95; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
             </style>
             <text x="10" y="18" class="h">GB200 superchip &mdash; 1 Grace + 2 B200</text>
             <rect x="10" y="30" width="700" height="240" class="pkg"/>
 
             <!-- Grace bottom -->
             <rect x="240" y="190" width="240" height="60" class="die"/>
-            <text x="360" y="215" class="t" text-anchor="middle" style="fill:#76B900;font-weight:700;">GRACE</text>
+            <text x="360" y="215" class="t" text-anchor="middle" style="fill:#b8b315;font-weight:700;">GRACE</text>
             <text x="360" y="232" class="t" text-anchor="middle">480 GB LPDDR5x · 480 GB/s</text>
             <rect x="220" y="190" width="20" height="60" class="lpd"/>
             <rect x="480" y="190" width="20" height="60" class="lpd"/>
 
             <!-- B200 left -->
             <rect x="60" y="60" width="220" height="100" class="die"/>
-            <text x="170" y="85" class="t" text-anchor="middle" style="fill:#76B900;font-weight:700;">B200 #1</text>
+            <text x="170" y="85" class="t" text-anchor="middle" style="fill:#b8b315;font-weight:700;">B200 #1</text>
             <text x="170" y="105" class="t" text-anchor="middle">192 GB HBM3e</text>
             <text x="170" y="125" class="t" text-anchor="middle">~8 TB/s</text>
             <text x="170" y="145" class="t" text-anchor="middle">FP4 / FP8 tensor cores</text>
@@ -1161,7 +1161,7 @@
 
             <!-- B200 right -->
             <rect x="440" y="60" width="220" height="100" class="die"/>
-            <text x="550" y="85" class="t" text-anchor="middle" style="fill:#76B900;font-weight:700;">B200 #2</text>
+            <text x="550" y="85" class="t" text-anchor="middle" style="fill:#b8b315;font-weight:700;">B200 #2</text>
             <text x="550" y="105" class="t" text-anchor="middle">192 GB HBM3e</text>
             <text x="550" y="125" class="t" text-anchor="middle">~8 TB/s</text>
             <text x="550" y="145" class="t" text-anchor="middle">FP4 / FP8 tensor cores</text>
@@ -1175,7 +1175,7 @@
 
             <!-- NVLink 5 between the two B200s -->
             <path d="M 280 110 L 440 110" class="nvl"/>
-            <text x="360" y="100" class="lbl" text-anchor="middle" style="fill:#d2a8ff;">NVLink 5 &mdash; 1.8 TB/s</text>
+            <text x="360" y="100" class="lbl" text-anchor="middle" style="fill:#d1c2e1;">NVLink 5 &mdash; 1.8 TB/s</text>
         </svg>
     </div>
 
@@ -1217,22 +1217,22 @@
     <div class="tier-visual">
         <div class="tier-bar">
             <div class="tier-label">HBM3e (B200)</div>
-            <div class="tier-fill" style="width: 95%; background: linear-gradient(90deg, rgba(255,166,87,0.65), rgba(255,166,87,0.25)); color: #ffa657;">~5&ndash;8 TB/s &nbsp;·&nbsp; ns latency</div>
+            <div class="tier-fill" style="width: 95%; background: linear-gradient(90deg, rgba(224,177,114,0.65), rgba(224,177,114,0.25)); color: #e0b172;">~5&ndash;8 TB/s &nbsp;·&nbsp; ns latency</div>
             <div class="tier-cost">~192 GB</div>
         </div>
         <div class="tier-bar">
             <div class="tier-label">C2C path</div>
-            <div class="tier-fill" style="width: 18%; background: linear-gradient(90deg, rgba(118,185,0,0.55), rgba(118,185,0,0.20)); color: #76B900;">900 GB/s</div>
+            <div class="tier-fill" style="width: 18%; background: linear-gradient(90deg, rgba(184,179,21,0.55), rgba(184,179,21,0.20)); color: #b8b315;">900 GB/s</div>
             <div class="tier-cost">link only</div>
         </div>
         <div class="tier-bar">
             <div class="tier-label">LPDDR5x (Grace)</div>
-            <div class="tier-fill" style="width: 30%; background: linear-gradient(90deg, rgba(118,185,0,0.45), rgba(118,185,0,0.10)); color: #76B900;">~500 GB/s · ~10&times; HBM latency</div>
+            <div class="tier-fill" style="width: 30%; background: linear-gradient(90deg, rgba(184,179,21,0.45), rgba(184,179,21,0.10)); color: #b8b315;">~500 GB/s · ~10&times; HBM latency</div>
             <div class="tier-cost">~480 GB</div>
         </div>
         <div class="tier-bar">
             <div class="tier-label">PCIe NVMe</div>
-            <div class="tier-fill" style="width: 4%; background: linear-gradient(90deg, rgba(255,123,114,0.45), rgba(255,123,114,0.10)); color: #ff7b72;">~14 GB/s</div>
+            <div class="tier-fill" style="width: 4%; background: linear-gradient(90deg, rgba(229,125,99,0.45), rgba(229,125,99,0.10)); color: #e57d63;">~14 GB/s</div>
             <div class="tier-cost">terabytes</div>
         </div>
     </div>
@@ -1295,18 +1295,18 @@ my_kernel&lt;&lt;&lt;blocks, threads&gt;&gt;&gt;(x, bytes);   <span class="cm">/
     <div class="canvas-wrap">
         <svg viewBox="0 0 720 380" width="720" height="380" xmlns="http://www.w3.org/2000/svg">
             <style>
-                .rack { fill: #0d1117; stroke: #30363d; }
-                .ct   { fill: rgba(118,185,0,0.18); stroke: #76B900; }
-                .sw   { fill: rgba(210,168,255,0.18); stroke: #d2a8ff; }
-                .pdu  { fill: rgba(255,166,87,0.18); stroke: #ffa657; }
-                .h    { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
-                .t    { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
-                .lbl  { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+                .rack { fill: #212120; stroke: #42423e; }
+                .ct   { fill: rgba(184,179,21,0.18); stroke: #b8b315; }
+                .sw   { fill: rgba(209,194,225,0.18); stroke: #d1c2e1; }
+                .pdu  { fill: rgba(224,177,114,0.18); stroke: #e0b172; }
+                .h    { fill: #b8b315; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+                .t    { fill: #edede7; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+                .lbl  { fill: #9b9b95; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
             </style>
             <text x="10" y="18" class="h">GB200 NVL72 &mdash; one rack as one computer</text>
             <rect x="200" y="30" width="320" height="340" class="rack"/>
 
-            <text x="360" y="50" class="t" text-anchor="middle" style="fill:#ffa657;">PDU / coolant manifold (top)</text>
+            <text x="360" y="50" class="t" text-anchor="middle" style="fill:#e0b172;">PDU / coolant manifold (top)</text>
             <rect x="210" y="55" width="300" height="14" class="pdu"/>
 
             <!-- 9 compute trays then 1 switch tray then alternating -->
@@ -1325,7 +1325,7 @@ my_kernel&lt;&lt;&lt;blocks, threads&gt;&gt;&gt;(x, bytes);   <span class="cm">/
 
                 <!-- middle: 9 NVLink switches in one band -->
                 <rect x="210" y="203" width="300" height="60" class="sw"/>
-                <text x="360" y="222" class="t" text-anchor="middle" style="fill:#d2a8ff;font-weight:700;">9&times; NVLink Switch trays</text>
+                <text x="360" y="222" class="t" text-anchor="middle" style="fill:#d1c2e1;font-weight:700;">9&times; NVLink Switch trays</text>
                 <text x="360" y="240" class="t" text-anchor="middle">copper backplane &mdash; all 72 B200 in one NVLink-5 domain</text>
 
                 <rect x="210" y="267" width="300" height="12" class="ct"/><text x="220" y="276" class="t">Compute tray #10 · 2&times; GB200</text>
