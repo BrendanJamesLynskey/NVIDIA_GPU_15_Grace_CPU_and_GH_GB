@@ -6,7 +6,7 @@
     <title>NVIDIA GPU 15 — Grace CPU and the GH200 / GB200 Superchips</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&family=Titillium+Web:ital,wght@0,300;0,400;0,600;0,700;1,400;1,700&family=Roboto+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-primary: #1b1b1a;
@@ -18,9 +18,9 @@
             --accent-dim: #b8b31544;
             --accent-glow: #b8b31533;
             --border: #363633;
-            --font-display: 'Space Grotesk', sans-serif;
-            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-            --font-body: 'Inter', sans-serif;
+            --font-display: 'Chakra Petch', sans-serif;
+            --font-mono: 'Roboto Mono', 'Roboto Mono', monospace;
+            --font-body: 'Titillium Web', sans-serif;
             --max-width: 900px;
         }
 
@@ -834,9 +834,9 @@
                 .pcie { fill: rgba(229,125,99,0.35); stroke: #e57d63; }
                 .nvl  { fill: rgba(184,179,21,0.40); stroke: #b8b315; }
                 .hbm  { fill: rgba(224,177,114,0.35); stroke: #e0b172; }
-                .lbl  { fill: #9b9b95; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-                .val  { fill: #edede7; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; }
-                .h    { fill: #edede7; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+                .lbl  { fill: #9b9b95; font-family: 'Roboto Mono', monospace; font-size: 11px; }
+                .val  { fill: #edede7; font-family: 'Roboto Mono', monospace; font-size: 11px; font-weight: 700; }
+                .h    { fill: #edede7; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 13px; }
             </style>
             <text x="10" y="18" class="h">CPU&harr;GPU path bandwidth &mdash; GB/s, log-ish scale</text>
             <line x1="190" y1="32" x2="190" y2="220" class="axis"/>
@@ -935,8 +935,8 @@
                 .core { fill: rgba(184,179,21,0.18); stroke: #b8b315; }
                 .l3   { fill: rgba(209,194,225,0.20); stroke: #d1c2e1; }
                 .mem  { fill: rgba(224,177,114,0.20); stroke: #e0b172; }
-                .t    { fill: #edede7; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
-                .h    { fill: #b8b315; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+                .t    { fill: #edede7; font-family: 'Roboto Mono', monospace; font-size: 10px; }
+                .h    { fill: #b8b315; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 13px; }
             </style>
             <text x="10" y="18" class="h">Grace die &mdash; schematic floor-plan</text>
             <rect x="20" y="30" width="680" height="170" class="pkg"/>
@@ -1005,9 +1005,9 @@
                 .mem  { fill: rgba(224,177,114,0.25); stroke: #e0b172; }
                 .lpd  { fill: rgba(184,179,21,0.20); stroke: #b8b315; }
                 .link { stroke: #b8b315; stroke-width: 6; fill: none; }
-                .h    { fill: #b8b315; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
-                .t    { fill: #edede7; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-                .lbl  { fill: #9b9b95; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+                .h    { fill: #b8b315; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 13px; }
+                .t    { fill: #edede7; font-family: 'Roboto Mono', monospace; font-size: 11px; }
+                .lbl  { fill: #9b9b95; font-family: 'Roboto Mono', monospace; font-size: 10px; }
             </style>
             <text x="10" y="18" class="h">Grace + GPU on one module &mdash; the C2C link</text>
             <rect x="20" y="30" width="680" height="180" class="pkg"/>
@@ -1137,9 +1137,9 @@
                 .hbm  { fill: rgba(224,177,114,0.20); stroke: #e0b172; }
                 .c2c  { stroke: #b8b315; stroke-width: 5; fill: none; }
                 .nvl  { stroke: #d1c2e1; stroke-width: 4; fill: none; stroke-dasharray: 4 3; }
-                .h    { fill: #b8b315; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
-                .t    { fill: #edede7; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-                .lbl  { fill: #9b9b95; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+                .h    { fill: #b8b315; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 13px; }
+                .t    { fill: #edede7; font-family: 'Roboto Mono', monospace; font-size: 11px; }
+                .lbl  { fill: #9b9b95; font-family: 'Roboto Mono', monospace; font-size: 10px; }
             </style>
             <text x="10" y="18" class="h">GB200 superchip &mdash; 1 Grace + 2 B200</text>
             <rect x="10" y="30" width="700" height="240" class="pkg"/>
@@ -1299,9 +1299,9 @@ my_kernel&lt;&lt;&lt;blocks, threads&gt;&gt;&gt;(x, bytes);   <span class="cm">/
                 .ct   { fill: rgba(184,179,21,0.18); stroke: #b8b315; }
                 .sw   { fill: rgba(209,194,225,0.18); stroke: #d1c2e1; }
                 .pdu  { fill: rgba(224,177,114,0.18); stroke: #e0b172; }
-                .h    { fill: #b8b315; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
-                .t    { fill: #edede7; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
-                .lbl  { fill: #9b9b95; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+                .h    { fill: #b8b315; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 13px; }
+                .t    { fill: #edede7; font-family: 'Roboto Mono', monospace; font-size: 10px; }
+                .lbl  { fill: #9b9b95; font-family: 'Roboto Mono', monospace; font-size: 10px; }
             </style>
             <text x="10" y="18" class="h">GB200 NVL72 &mdash; one rack as one computer</text>
             <rect x="200" y="30" width="320" height="340" class="rack"/>
