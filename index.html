@@ -873,7 +873,7 @@
 <section class="slide" id="slide-02">
     <div class="slide-number">02</div>
     <h2>Grace &mdash; The CPU</h2>
-    <p>Grace is a 72-core ARM v9.2-a server CPU built on TSMC 4N (the same node as Hopper). Cores are <strong>ARM Neoverse V2</strong> &mdash; the same Cortex-X-derived design used in AWS Graviton 3/4 and several other ARM datacenter parts.</p>
+    <p>Grace is a 72-core ARM v9.2-a server CPU built on TSMC 4N (the same node as Hopper). Cores are <strong>ARM Neoverse V2</strong> &mdash; the same Cortex-X-derived design used in AWS Graviton4 (Graviton3 used the older Neoverse V1) and several other ARM datacenter parts.</p>
 
     <div class="diagram-grid cols-2">
         <div class="diagram-panel accent-border">
@@ -1081,7 +1081,7 @@
                 <li>Grace 480 GB LPDDR5x</li>
                 <li>96 GB <strong>HBM3</strong> (Hopper H100 die)</li>
                 <li>Total unified: <strong>576 GB</strong></li>
-                <li>Aggregate memory bandwidth: HBM3 ~3.4 TB/s + LPDDR ~480 GB/s</li>
+                <li>Aggregate memory bandwidth: HBM3 ~4 TB/s + LPDDR ~480 GB/s</li>
                 <li>Released 2023</li>
             </ul>
         </div>
@@ -1089,8 +1089,8 @@
             <h4>GH200 with H200</h4>
             <ul>
                 <li>Grace 480 GB LPDDR5x</li>
-                <li>141 GB <strong>HBM3e</strong> (this is the "H200" inside)</li>
-                <li>Total unified: <strong>621 GB</strong></li>
+                <li>144 GB <strong>HBM3e</strong> (the H200-class memory upgrade)</li>
+                <li>Total unified: <strong>624 GB</strong></li>
                 <li>HBM3e bandwidth ~4.8 TB/s</li>
                 <li>Refreshed 2024 &mdash; the volume Helios / Alps part</li>
             </ul>
@@ -1265,7 +1265,7 @@ my_kernel&lt;&lt;&lt;blocks, threads&gt;&gt;&gt;(x, bytes);   <span class="cm">/
     <div class="diagram-grid cols-2">
         <div class="diagram-panel accent-border">
             <h4>Model loading</h4>
-            <p>Loading a 200 GB FP8 checkpoint into a single GH200 happens at C2C speed (~900 GB/s) once it is in Grace memory &mdash; vs ~32 GB/s over PCIe Gen5 to a discrete H100. Checkpoint cold-starts drop from minutes to seconds.</p>
+            <p>Loading a 200 GB FP8 checkpoint into a single GH200 happens at C2C speed (~900 GB/s) once it is in Grace memory &mdash; vs ~64 GB/s over PCIe Gen5 to a discrete H100. Checkpoint cold-starts drop from minutes to seconds.</p>
         </div>
         <div class="diagram-panel accent-border">
             <h4>KV cache offload at scale</h4>
@@ -1354,7 +1354,7 @@ my_kernel&lt;&lt;&lt;blocks, threads&gt;&gt;&gt;(x, bytes);   <span class="cm">/
     <ul>
         <li><strong>18 compute trays</strong>, two GB200 superchips each &rarr; <strong>36 GB200 = 36 Grace + 72 B200</strong> per rack (each GB200 superchip has 1 Grace + 2 B200).</li>
         <li><strong>9 NVLink Switch trays</strong> in the middle, copper backplane between trays.</li>
-        <li><strong>HBM3e total:</strong> 72 &times; 192 GB = <strong>~13.8 TB</strong> across all 72 B200 GPUs.</li>
+        <li><strong>HBM3e total:</strong> 72 &times; 186 GB = <strong>~13.4 TB</strong> across all 72 B200 GPUs.</li>
         <li><strong>Grace LPDDR5x total:</strong> 36 &times; 480 GB = <strong>~17.3 TB</strong>.</li>
         <li><strong>Aggregate addressable memory:</strong> ~<strong>31 TB</strong> coherent across the rack from any GPU.</li>
         <li><strong>NVLink 5 fabric:</strong> 1.8 TB/s per GPU pair, all 72 B200 dies in <em>one</em> NVLink domain. No InfiniBand needed inside a rack.</li>
@@ -1437,7 +1437,7 @@ docker buildx build \
                 <li>20-core ARM CPU: Cortex-X925 + Cortex-A725 hybrid (10 + 10)</li>
                 <li>Single Blackwell GPU tile (smaller than B200)</li>
                 <li>Native FP4 / FP8 tensor cores</li>
-                <li>~1 PFLOP FP4 dense compute</li>
+                <li>~1 PFLOP FP4 sparse (~0.5 dense) compute</li>
                 <li>One die, one package</li>
             </ul>
         </div>
@@ -1551,7 +1551,7 @@ docker buildx build \
                 <option value="gh200_624" selected>GH200 · Grace + H200 (480 LPDDR5x + 141 HBM3e)</option>
                 <option value="gb200">GB200 · Grace + 2&times; B200 (480 LPDDR5x + 384 HBM3e)</option>
                 <option value="spark">DGX Spark · GB10 (128 GB unified LPDDR5x)</option>
-                <option value="x86h100">x86 + 8&times; H100 SXM5 (HGX, 768 GB HBM3 total)</option>
+                <option value="x86h100">x86 + 8&times; H100 SXM5 (HGX, 640 GB HBM3 total)</option>
             </select>
         </div>
         <div class="control-row">
@@ -1577,11 +1577,11 @@ docker buildx build \
     <script>
     (function(){
         const systems = {
-            'gh200_480': { name:'GH200 (H100)',  hbm:96,  lpd:480, fp8:4,  link:'C2C 900 GB/s', cpu:'72 Neoverse V2', cpuArch:'arm' },
-            'gh200_624': { name:'GH200 (H200)',  hbm:141, lpd:480, fp8:4,  link:'C2C 900 GB/s', cpu:'72 Neoverse V2', cpuArch:'arm' },
+            'gh200_480': { name:'GH200 (H100)',  hbm:96,  lpd:480, fp8:2,  link:'C2C 900 GB/s', cpu:'72 Neoverse V2', cpuArch:'arm' },
+            'gh200_624': { name:'GH200 (H200)',  hbm:144, lpd:480, fp8:2,  link:'C2C 900 GB/s', cpu:'72 Neoverse V2', cpuArch:'arm' },
             'gb200':     { name:'GB200',         hbm:384, lpd:480, fp8:9,  link:'2&times; C2C 900 GB/s', cpu:'72 Neoverse V2', cpuArch:'arm' },
-            'spark':     { name:'DGX Spark',     hbm:0,   lpd:128, fp8:0.5,link:'on-die unified', cpu:'20 X925/A725', cpuArch:'arm' },
-            'x86h100':   { name:'x86 + 8&times; H100', hbm:640, lpd:0, fp8:32, link:'PCIe Gen5 ~64 GB/s per GPU', cpu:'2&times; Xeon / EPYC', cpuArch:'x86' }
+            'spark':     { name:'DGX Spark',     hbm:0,   lpd:128, fp8:0.25,link:'on-die unified', cpu:'20 X925/A725', cpuArch:'arm' },
+            'x86h100':   { name:'x86 + 8&times; H100', hbm:640, lpd:0, fp8:16, link:'PCIe Gen5 ~64 GB/s per GPU', cpu:'2&times; Xeon / EPYC', cpuArch:'x86' }
         };
         const workloads = {
             'inf70': {
